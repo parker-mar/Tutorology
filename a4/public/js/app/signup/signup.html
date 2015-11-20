@@ -1,0 +1,30 @@
+<h2>Sign Up</h2>
+
+<form name="form" data-toggle="validator" role="form">
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <div class="form-group" ng-class="{ 'has-error': form.email.$invalid && !form.email.$pristine}">
+                <label for="inputEmail" class="control-label">Email</label>
+                <input ng-model="registerInfo.email" type="email" class="form-control" id="inputEmail" name="email" placeholder="Email" data-error="Email address is invalid" required>
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error': form.pass.$invalid && !form.pass.$pristine}">
+                <label for="inputPass" class="control-label">Password</label>
+                <input ng-model="registerInfo.pass" type="password" class="form-control" id="inputPass" name="pass" placeholder="Password" required>
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error': form.confirmPass.$invalid && !form.confirmPass.$pristine}">
+                <label for="inputConfirmPass" class="control-label">Confirm Password</label>
+                <input ng-model="registerInfo.confirmPass" type="password" class="form-control" id="inputConfirmPass" name="confirmPass" placeholder="Confirm Password" valid-password-c="pass" required>
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <div class="form-group">
+                <button style="float:right" class="btn btn-primary" ng-click="signUp()" type="submit" ng-disabled="form.$invalid">Sign Up</button>
+            </div>
+        </div>
+    </div>
+</form>

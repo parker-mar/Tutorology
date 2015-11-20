@@ -1,0 +1,24 @@
+<h2>Login</h2>
+<form data-toggle="validator" role="form" name="form">
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <div class="form-group" ng-class="{ 'has-error': form.email.$invalid && !form.email.$pristine}">
+                <label for="inputEmail" class="control-label">Email</label>
+                <input ng-model="loginInfo.email" type="email" class="form-control" id="inputEmail" name="email" placeholder="Email" data-error="Email address is invalid" required>
+                <div class="help-block with-errors"></div>
+            </div>
+            <div class="form-group" ng-class="{ 'has-error': form.password.$invalid && !form.password.$pristine}">
+                <label for="inputPassword" class="control-label">Password</label>
+                <input ng-model="loginInfo.pass" type="password" class="form-control" id="inputPassword" name="password" placeholder="Password" required>
+                <div class="help-block with-errors"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <div class="form-group">
+                <button style="float:right" ng-click="login()" type="submit" class="btn btn-primary" ng-disabled="form.$invalid" >Submit</button>
+            </div>
+        </div>
+    </div>
+</form>

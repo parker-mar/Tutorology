@@ -1,0 +1,24 @@
+{
+  "name": "csc309a4",
+  "version": "1.0.0",
+  "description": "CSC309 Assignment 4",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prestart": "mongod --dbpath data --fork --logpath /dev/null",
+    "start": "node server.js",
+    "poststop": "mongo admin --eval 'db.shutdownServer()' > /dev/null"
+  },
+  "author": "Ahmed El-Baz",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "express": ">= 1.2.0",
+    "express-session": ">= 1.12.1",
+    "mongodb": "^2.0.47",
+    "mongoose": "^4.2.4",
+    "mongoose-types-ext": "^0.2.0",
+    "user-agent-parser": "^0.6.0",
+    "uuid": "^2.0.1"
+  }
+}

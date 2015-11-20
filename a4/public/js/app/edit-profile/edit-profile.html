@@ -1,0 +1,63 @@
+<h2>Edit Profile</h2>
+<div class="row">
+    <div class="col-xs-4">
+        <div class="img-container" style="height:200px">
+            <img ng-src="{{(user.profile.image)?user.profile.image:'/img/default-profile.jpg'}}" class="img-rounded img-profile">
+        </div>
+        <div style="margin-bottom:10px;margin-top:10px">
+            <strong>Browse: </strong><input type="file" id="file"/>
+        </div>
+        <button class="btn btn-default" ng-click="changeImage()">Set Image</button>
+    </div>
+    <div class="col-xs-8">
+        <form data-toggle="validator" role="form" name="form">
+            <table class="table">
+                <tr>
+                    <th>Email</th>
+                    <td>{{user.email}}</td>
+                </tr>
+                <tr>
+                    <div class="form-group" ng-class="{ 'has-error': form.displayName.$invalid && !form.displayName.$pristine}">
+                        <th>Display Name</th>
+                        <td><input ng-model="user.displayName" class="form-control" name="displayName" type="text"></td>
+                    </div>
+                </tr>
+                <tr>
+                    <div class="form-group" ng-class="{ 'has-error': form.description.$invalid && !form.description.$pristine}">
+                        <th>Description</th>
+                        <td><textarea ng-model="user.profile.description" class="form-control" name="description" style="resize:vertical;"></textarea></td>
+                    </div>
+                </tr>
+            </table>
+            <button class="btn btn-primary" ng-click="updating()">Update</button>
+            <button class="btn btn-default" ng-click="cancelling()">Cancel</button>
+        </form>
+    </div>
+</div>
+<form name="form" data-toggle="validator" role="form">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2>Change Password</h2>
+                <div class="form-group"  ng-class="{ 'has-error': form.oldPass.$invalid && !form.oldPass.$pristine}">
+                    <label for="inputOldPass" class="control-label">Old Password</label>
+                    <input ng-model="passChange.oldPass" type="password" class="form-control" id="inputOldPass" name="oldPass" placeholder="Old Password" required>
+                    <div class="help-block with-errors"></div>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': form.newPass.$invalid && !form.newPass.$pristine}">
+                    <label for="inputNewPass" class="control-label">New Password</label>
+                    <input ng-model="passChange.newPass" type="password" class="form-control" id="inputNewPass" name="newPass" placeholder="New Password" required>
+                    <div class="help-block with-errors"></div>
+                </div>
+                <div class="form-group" ng-class="{ 'has-error': form.confirmNewPass.$invalid && !form.confirmNewPass.$pristine}">
+                    <label for="inputConfirmNewPass" class="control-label">Confirm New Password</label>
+                    <input ng-model="passChange.confirmNewPass" type="password" class="form-control" id="inputConfirmNewPass" name="confirmNewPass" placeholder="Confirm New Password" valid-password-c="newPass" required>
+                    <div class="help-block with-errors"></div>
+                </div>
+                </tr>
+            </table>
+            <div class="form-group">
+                <button class="btn btn-default" ng-click="changePass()" type="submit" ng-disabled="form.$invalid">Change Password</button>
+            </div>
+        </div>
+    </div>
+</form>

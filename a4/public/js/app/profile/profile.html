@@ -1,0 +1,128 @@
+<h2>Profile</h2><a ng-if="(actor._id == user._id) || (actor.authorization=='Admin'&& user.authorization == 'User') || (actor.authorization =='SAdmin')" ng-click="editUser()">edit</a>
+<div class="row">
+    <div class="col-xs-4">
+        <div class="img-container" style="height:200px">
+            <img ng-src="{{(user.profile.image)?user.profile.image:'/img/default-profile.jpg'}}" class="img-rounded img-profile" style="width: 100%; height:100%; max-width: 200px; max-height: 200px">
+        </div>
+        <br>
+        <button ng-if="(user.authorization !='SAdmin') && ( (actor._id == user._id) || (actor.authorization=='Admin'&& user.authorization == 'User') || (actor.authorization =='SAdmin'))" class="btn btn-default" ng-click="deleteUser()">Delete User</button>
+        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'User'" class="btn btn-default" ng-click="makeUserAdmin()">Make Admin</button>
+        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'Admin'" class="btn btn-default" ng-click="demoteToUser()">Demote to User</button>
+    </div>
+    <div class="col-xs-8">
+        <table class="table">
+            <tr>
+                <th>Email</th>
+                <td>{{user.email}}</td>
+            </tr>
+            <tr>
+                <th>Display Name</th>
+                <td>{{user.displayName}}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{user.profile.description}}</td>
+            </tr>
+        </table>
+    </div>
+    <div ng-if="actor.authorization=='Admin' || actor.authorization =='SAdmin'" class="col-xs-8">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">User Connection Info</div>
+            <!--<div class="panel-body">-->
+            <!--</div>-->
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Devices</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Type</th>
+                        <th>Vendor</th>
+                        <th>Model</th>
+                    </tr>
+                    <tr ng-repeat="connection in user.connections | unique:'device'">
+                        <td>{{connection.device.dtype}}</td>
+                        <td>{{connection.device.vendor}}</td>
+                        <td>{{connection.device.model}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>IP Addresses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="connection in user.connections | unique:'ipAddress'">
+                        <td>{{connection.ipAddress}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Browsers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="connection in user.connections | unique:'browser'">
+                        <td>{{connection.browser}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Operating Systems</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="connection in user.connections | unique:'os'">
+                        <td>{{connection.os}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel panel-default" ng-if="actor.authorization == 'Admin' || actor.authorization == 'SAdmin'">
+            <!-- Default panel contents -->
+            <div class="panel-heading">User Activities</div>
+            <!--<div class="panel-body">-->
+            <!--</div>-->
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="activity in user.activities | orderBy:'-time'">
+                        <td ng-if="activity.type == 'update_user'">Updated the profile for {{(activity.target.displayName)?activity.target.displayName:activity.target.email}}</td>
+                        <td ng-if="activity.type == 'update_pass'">Updated password</td>
+                        <td ng-if="activity.type == 'view_user'">Viewed profile of {{(activity.target.displayName)?activity.target.displayName:activity.target.email}}</td>
+                        <td ng-if="activity.type == 'delete_user'">Deleted user of {{(activity.target.displayName)?activity.target.displayName:activity.target.email}}</td>
+                        <td ng-if="activity.type == 'set_admin'">Promoted {{(activity.target.displayName)?activity.target.displayName:activity.target.email}} to Admin</td>
+                        <td ng-if="activity.type == 'demote_admin'">Demoted {{(activity.target.displayName)?activity.target.displayName:activity.target.email}} to User</td>
+                        <td>{{activity.time_formatted}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
