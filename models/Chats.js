@@ -3,8 +3,8 @@
  */
 module.exports = function(app){
     var ChatSchema = new app.mongoose.Schema({
-        from_id: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        to_id: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
+        fromId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
+        toId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
         messages: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'ChatMessages'}]
     });
 
