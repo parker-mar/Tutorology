@@ -14,5 +14,5 @@ module.exports = function(app){
         os: String
     });
 
-    return app.mongoose.model('Connections',ConnectionSchema);
-}
+    return app.mongoose.model('Connections', ConnectionSchema);
+};

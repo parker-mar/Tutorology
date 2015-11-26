@@ -24,7 +24,7 @@ angular.module('MyApp.profile', ['ngRoute'])
                 function successCallback(res){
                     $scope.user = res.data.data;
                     $scope.user.activities.forEach(function(activity){
-                        activity.time = Date.parse(activity.created_at);
+                        activity.tfe = Date.parse(activity.created_at);
                         activity.time_formatted = $filter('date')(activity.time,'medium');
                     });
                 },

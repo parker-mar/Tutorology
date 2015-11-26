@@ -10,5 +10,5 @@ module.exports = function(app){
         image: String
     });
 
-    return app.mongoose.model('Profiles',ProfileSchema);
+    return app.mongoose.model('Profiles', ProfileSchema);
 }

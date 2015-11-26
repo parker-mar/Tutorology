@@ -9,6 +9,7 @@ var AnalyticsController = function(app) {
 
     var parse = require('user-agent-parser');
 
+
 //  Logs the user's connection information on login, through the 'user-agent' header.
     this.recordUserConnectionInfo = function (req,res,next) {
         var userAgentString = req.headers['user-agent'];

@@ -6,12 +6,12 @@ module.exports = function(app){
         actor: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
         type: String,
         target: {
-            _id: { type: app.mongoose.SchemaTypes.ObjectId},
+            _id: { type: app.mongoose.SchemaTypes.ObjectId },
             email: String,
             displayName: String
         },
         created_at: { type: Date, required: true, default: Date.now }
     });
 
-    return app.mongoose.model('Activities',ActivitySchema);
-}
+    return app.mongoose.model('Activities', ActivitySchema);
+};
