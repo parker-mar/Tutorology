@@ -9,17 +9,16 @@ module.exports = function(app){
         authorization: String,
 
         // User details
-        type: String,
         topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
         displayName: String,
         profile: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Profiles'},
         activities: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Activities'}],
         connections: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Connections'}]
-    });
+    }, { discriminatorKey: 'kind' });
 
     var UsersModel = app.mongoose.model('Users', UserSchema);
 
-    UsersModel.defaultFilter = '_id email authorization type topics displayName profile activities connections';
+    UsersModel.defaultFilter = '_id email authorization topics displayName profile activities connections';
 
     return UsersModel;
 };

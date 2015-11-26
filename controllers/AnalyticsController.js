@@ -83,7 +83,7 @@ var AnalyticsController = function(app) {
         });
     };
 
-//  Gets all the activities in the database.
+//  Gets all the reties in the database.
 //  @returns {Response} All the activities in the database.
     this.getAllActivities = function (req, res, next) {
         Activities.find({})

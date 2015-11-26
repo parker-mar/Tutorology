@@ -7,8 +7,8 @@ module.exports = function(app){
         toId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
         when: { type: Date, required: true, default: Date.now },
         message: String,
-        isRead: Boolean,
+        isRead: Boolean
     });
 
-    return app.mongoose.model('Chats', ChatSchema);
+    return app.mongoose.model('ChatMessages', ChatSchema);
 };

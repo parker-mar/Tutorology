@@ -238,22 +238,21 @@ var UserController = function(app) {
                 });
 
             });
+    };
+
+// Creates a new topic (of name topic) and adds it to the list of topics associated with the tutor with ID tutor_id.
+// @paramarg {
+    this.addTopic = function(req, res, next) {
+        var tutorId = req.params.userId;
+
+
+            //(app.mongoose.SchemaTypes.ObjectId tutor_id, String topic)
 
     };
-//
-//// Creates a new topic (of name topic) and adds it to the list of topics associated with the tutor with ID tutor_id.
-//// @paramarg {
-//    this.addTopic = function(req, res, next) {
-//        var tutorId = req.params.userId;
-//
-//            (app.mongoose.SchemaTypes.ObjectId tutor_id, String topic)
-//
-//    };
-//
-//
-//    //this.getTopics
-//    //
-//    //this.removeTopic
+
+    //this.getTopics
+    //
+    //this.removeTopic
 };
 
 module.exports = UserController;

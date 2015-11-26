@@ -117,6 +117,7 @@ var SecurityGate = function(app) {
                     console.log("ERROR:" + err);
                     res.status(500).send({error: true, message: "An internal server error occurred."});
                 } else {
+                    // TODO we want to see if target ID is param ID, no?
                     next();
                 }
             });

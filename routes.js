@@ -36,7 +36,9 @@ module.exports = function(app) {
     // User Routes
     app.get(root+'users',securityGate.checkIfUserIsSignedIn,userController.getAllUsers);
 
-    app.post(root+'users/:userId',securityGate.checkIfActingOnLowerAuthorization,userController.updateUser);
+    app.post(root+'users/:userId',
+        securityGate.checkIfActingOnLowerAuthorization,
+        userController.updateUser);
 
     app.post(root+'users/:userId/changepass',securityGate.checkIfUserIsSignedIn,userController.changePass);
 
