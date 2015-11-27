@@ -10,7 +10,7 @@ var UserController = function(app) {
     var Topics = app.models.Topics;
     var Reviews = app.models.Reviews;
 
-//  Logs in the user
+//  Gets all users
 //  @returns {Response} All the users in the database.
     this.getAllUsers = function (req, res, next) {
         Users.find({}, Users.defaultFilter)
@@ -240,18 +240,6 @@ var UserController = function(app) {
             });
     };
 
-// Creates a new topic (of name topic) and adds it to the list of topics associated with the tutor with ID tutor_id.
-// @paramarg {
-    this.addTopic = function(req, res, next) {
-        var tutorId = req.params.userId;
-
-            //(app.mongoose.SchemaTypes.ObjectId tutor_id, String topic)
-
-    };
-
-    //this.getTopics
-    //
-    //this.removeTopic
 };
 
 module.exports = UserController;

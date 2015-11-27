@@ -12,6 +12,9 @@ module.exports = function(app) {
     var UserController = require("./controllers/UserController");
     var userController = new UserController(app);
 
+    var TutorController = require("./controllers/TutorController");
+    var tutorController = new TutorController(app);
+
     var AnalyticsController = require("./controllers/AnalyticsController");
     var analyticsController = new AnalyticsController(app);
 
@@ -56,6 +59,8 @@ module.exports = function(app) {
         securityGate.checkIfUserIsSAdmin,userController.setAuthorization);
 
     // Tutor Routes
+    app.get(root+'tutors',
+        securityGate.checkIfUserIsSignedIn, tutorController.getTutors);
 
     // Student Routes
 
