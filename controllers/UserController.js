@@ -245,7 +245,6 @@ var UserController = function(app) {
     this.addTopic = function(req, res, next) {
         var tutorId = req.params.userId;
 
-
             //(app.mongoose.SchemaTypes.ObjectId tutor_id, String topic)
 
     };

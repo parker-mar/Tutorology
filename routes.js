@@ -27,32 +27,47 @@ module.exports = function(app) {
     });
 
     // Login Routes
-    app.post(root+'login',securityGate.checkIfAnonymous,loginController.login, analyticsController.recordUserConnectionInfo);
+    app.post(root+'register',
+        securityGate.checkIfAnonymous, loginController.register, analyticsController.recordUserConnectionInfo);
 
-    app.post(root+'logout',securityGate.checkIfUserIsSignedIn,loginController.logout);
+    app.post(root+'login',
+        securityGate.checkIfAnonymous, loginController.login, analyticsController.recordUserConnectionInfo);
 
-    app.post(root+'register',securityGate.checkIfAnonymous,loginController.register, analyticsController.recordUserConnectionInfo);
+    app.post(root+'logout',
+        securityGate.checkIfUserIsSignedIn, loginController.logout);
 
     // User Routes
-    app.get(root+'users',securityGate.checkIfUserIsSignedIn,userController.getAllUsers);
+    app.get(root+'users',
+        securityGate.checkIfUserIsSignedIn, userController.getAllUsers);
 
-    app.post(root+'users/:userId',
-        securityGate.checkIfActingOnLowerAuthorization,
-        userController.updateUser);
+    app.get(root+'users/:userId',
+        securityGate.checkIfUserIsSignedIn, userController.getUser);
 
-    app.post(root+'users/:userId/changepass',securityGate.checkIfUserIsSignedIn,userController.changePass);
+    app.put(root+'users/:userId',
+        securityGate.checkIfActingOnLowerAuthorization, userController.updateUser);
 
-    app.get(root+'users/:userId',securityGate.checkIfUserIsSignedIn,userController.getUser);
+    app.delete(root+'users/:userId',
+        securityGate.checkIfActingOnLowerAuthorization,userController.deleteUser);
 
-    app.get(root+'actor',securityGate.checkIfUserIsSignedIn,userController.getActor);
+    app.put(root+'users/:userId/changepass',
+        securityGate.checkIfUserIsSignedIn, userController.changePass);
 
-    app.post(root+'users/:userId/setadmin',securityGate.checkIfUserIsSAdmin,userController.setAuthorization);
+    app.put(root+'users/:userId/setadmin',
+        securityGate.checkIfUserIsSAdmin,userController.setAuthorization);
 
-    app.delete(root+'users/:userId',securityGate.checkIfActingOnLowerAuthorization,userController.deleteUser);
+    // Tutor Routes
 
-    app.get(root+'activities',securityGate.checkIfUserIsAdmin,analyticsController.getAllActivities);
+    // Student Routes
 
-    app.get(root+'connections',securityGate.checkIfUserIsAdmin,analyticsController.getAllConnections);
+    // Other User Routes
+    app.get(root+'actor',
+        securityGate.checkIfUserIsSignedIn, userController.getActor);
+
+    app.get(root+'activities',
+        securityGate.checkIfUserIsAdmin, analyticsController.getAllActivities);
+
+    app.get(root+'connections',
+        securityGate.checkIfUserIsAdmin, analyticsController.getAllConnections);
 
     //Sets the paths for public files
     app.use(express.static(__dirname + '/public'));

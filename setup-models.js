@@ -6,8 +6,8 @@ module.exports = function(app) {
     //Initializes all the models, and attaches them to the 'app' object,
     var models = [
         'Users',
-        'Students',
         'Tutors',
+        'Students',
         'Topics',
         'Profiles',
         'Connections',
