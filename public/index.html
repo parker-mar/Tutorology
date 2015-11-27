@@ -39,8 +39,22 @@
                 <p class="navbar-text"> Done By: Ahmed El-Baz, Student Number: 999247523</p>
             </div>
             <ul class="nav navbar-nav navbar-right" ng-if="actor">
-                <li><a ng-href="/#/users/{{actor._id}}/profile"><img class="img-circle" style="margin-right:20px;max-height:20px;max-width:20px;background:#FFFFFF" ng-src="{{(actor.profile.image)?actor.profile.image:'/img/default-profile.jpg'}}">{{(actor.displayName)?actor.displayName:actor.email}}</a></li>
-                <li><a ng-click="logout()">Logout</a></li>
+
+
+              <!--  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>-->
+                <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img class="img-circle" style="margin-right:20px;max-height:20px;max-width:20px;background:#FFFFFF" ng-src="{{(actor.profile.image)?actor.profile.image:'/img/default-profile.jpg'}}">{{(actor.displayName)?actor.displayName:actor.email}}<span class="caret" style="margin-left:10px;"></span></a>
+
+                <ul class="dropdown-menu">
+                        <li><a ng-href="/#/users/{{actor._id}}/profile">Profile</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a ng-click="logout()">Logout</a></li>
+                    </ul>
+                </li>
+
+
+
             </ul>
         </div>
     </nav>
