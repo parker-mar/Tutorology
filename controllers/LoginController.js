@@ -55,10 +55,15 @@ var LoginController = function(app) {
 //  @returns {String} The registered user.
     this.register = function (req,res,next) {
         var email = req.body.email;
+        var userType = req.body.userType;
         var pass = req.body.pass;
         var confirmPass = req.body.confirmPass;
         if(typeof email === "undefined") {
             var errMsg = "Error: Email not sent.";
+            console.log(errMsg);
+            res.status(400).send({error:true,message:errMsg});
+        } else if(userType !='Tutor' && userType !='Student' && userType !='Other' ) {
+            var errMsg = "Error: User Type can only be: 'Tutor','Student',or 'Other'.";
             console.log(errMsg);
             res.status(400).send({error:true,message:errMsg});
         } else if(typeof pass === "undefined" || typeof confirmPass === "undefined") {
@@ -93,6 +98,8 @@ var LoginController = function(app) {
                                 email: email,
                                 password: pass,
                                 authorization: authorization,
+                                rate: 0.00,
+                                userType: userType,
                                 profile: profile._id
                             },function(err,user) {
                                 if(err){

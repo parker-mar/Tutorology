@@ -23,6 +23,12 @@
                     </div>
                 </tr>
                 <tr>
+                    <div class="form-group" ng-class="{ 'has-error': form.rate.$invalid && !form.rate.$pristine}">
+                        <th>Rate (per hour)</th>
+                        <td><input ng-model="user.rate" class="form-control" name="rate" type="number" min="0.00" step="0.05" value="0.00"></td>
+                    </div>
+                </tr>
+                <tr>
                     <div class="form-group" ng-class="{ 'has-error': form.description.$invalid && !form.description.$pristine}">
                         <th>Description</th>
                         <td><textarea ng-model="user.profile.description" class="form-control" name="description" style="resize:vertical;"></textarea></td>

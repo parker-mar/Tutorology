@@ -9,6 +9,8 @@ module.exports = function(app){
         authorization: String,
 
         // User details
+        rate:{ type: Number, min: 0 },
+        userType:String,
         topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
         displayName: String,
         profile: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Profiles'},
@@ -18,7 +20,7 @@ module.exports = function(app){
 
     var UsersModel = app.mongoose.model('Users', UserSchema);
 
-    UsersModel.defaultFilter = '_id email authorization topics displayName profile activities connections';
+    UsersModel.defaultFilter = '_id email authorization rate userType topics displayName profile activities connections';
 
     return UsersModel;
 };

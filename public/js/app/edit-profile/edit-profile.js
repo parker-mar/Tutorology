@@ -43,7 +43,9 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
         $(".error").hide();
         if($scope.user.profile.description.length > 500)
             $rootScope.displayAlert("error","Error: Description text exceeds maximum length of 500.");
-        else {
+        else if($scope.user.rate < 0 || isNaN($scope.user.rate )){
+            $rootScope.displayAlert("error","Error: Rate must be a Positive number.");
+        } else{
             var usertemp = {};
             angular.copy($scope.user, usertemp);
             // ensures that the image does not get sent on every request.

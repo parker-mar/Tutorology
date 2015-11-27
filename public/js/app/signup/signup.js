@@ -13,7 +13,7 @@ angular.module('MyApp.signup', ['ngRoute'])
 
 .controller("SignupController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope) {
     $scope.registerInfo = {};
-
+    var userType = $('#inputUserType input:radio:checked').val();
     // Redirects to the home page if user is already logged in.
     $http.get('/api/actor').then(
         function successCallback(res){

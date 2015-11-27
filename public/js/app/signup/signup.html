@@ -8,6 +8,12 @@
                 <input ng-model="registerInfo.email" type="email" class="form-control" id="inputEmail" name="email" placeholder="Email" data-error="Email address is invalid" required>
                 <div class="help-block with-errors"></div>
             </div>
+            <div class="input-group" id="inputUserType" >
+                <label for="inputEmail" class="control-label" style="margin-right: 10px;">Register As:  </label>
+                <label class="radio-inline"><input type="radio" ng-model="registerInfo.userType" value ="Tutor" data-error="One option is required" required>Tutor</label>
+                <label class="radio-inline"><input type="radio" ng-model="registerInfo.userType" value ="Student" required>Student</label>
+                <div class="help-block with-errors"></div>
+            </div>
             <div class="form-group" ng-class="{ 'has-error': form.pass.$invalid && !form.pass.$pristine}">
                 <label for="inputPass" class="control-label">Password</label>
                 <input ng-model="registerInfo.pass" type="password" class="form-control" id="inputPass" name="pass" placeholder="Password" required>

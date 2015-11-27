@@ -19,6 +19,10 @@
                 <th>Display Name</th>
                 <td>{{user.displayName}}</td>
             </tr>
+            <tr ng-if="user.userType == 'Tutor'">
+                <th>Rate (per hour)</th>
+                <td>{{user.rate}}</td>
+            </tr>
             <tr>
                 <th>Description</th>
                 <td>{{user.profile.description}}</td>

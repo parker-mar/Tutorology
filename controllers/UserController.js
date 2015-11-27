@@ -33,6 +33,7 @@ var UserController = function(app) {
     this.updateUser = function (req, res, next) {
         var userId = req.params.userId;
         var displayName = req.body.displayName;
+        var rate = req.body.rate;
         var description = req.body.profile.description;
         var image = req.body.profile.image;
         var actorId = req.session.userId;
@@ -41,6 +42,10 @@ var UserController = function(app) {
             .exec(function (err, user) {
                 if (typeof displayName !== 'undefined')
                     user.displayName = displayName;
+
+                if (typeof rate !== 'undefined')
+                    user.rate = rate;
+
 
                 user.save(function (err) {
                     if (err) {
