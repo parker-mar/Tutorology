@@ -13,7 +13,6 @@ var TutorController = function(app) {
 //  @returns {Response} All the tutors in the database.
     this.getTutors = function (req, res, next) {
         Tutors.find({}, Tutors.defaultFilter)
-            .populate('Profile')
             .exec(function (err, tutors) {
                 if (err) {
                     console.log(err.message);
