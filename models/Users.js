@@ -9,16 +9,19 @@ module.exports = function(app){
         authorization: String,
 
         // User details
-        topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
         displayName: String,
         profile: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Profiles'},
         activities: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Activities'}],
-        connections: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Connections'}]
+        connections: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Connections'}],
+        requests: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Requests'}],
+        reviews: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Reviews'}],
+        topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
+        referrals: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Referrals'}]
     }, { discriminatorKey: 'kind' });
 
     var UsersModel = app.mongoose.model('Users', UserSchema);
 
-    UsersModel.defaultFilter = '_id email authorization topics displayName profile activities connections';
+    UsersModel.defaultFilter = '_id email authorization displayName profile activities connections requests reviews topics referrals';
 
     return UsersModel;
 };

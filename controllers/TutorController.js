@@ -4,7 +4,6 @@
 var TutorController = function(app) {
 
     var Tutors = app.models.Tutors;
-    var Students = app.models.Students;
     var Topics = app.models.Topics;
     var Requests = app.models.Requests;
     var Reviews = app.models.Reviews;
@@ -76,7 +75,6 @@ var TutorController = function(app) {
         });
     };
 
-
 //  Gets all topics
 //  @returns {Response} All the topics in the database.
     this.getTopics = function (req, res, next) {
@@ -89,10 +87,11 @@ var TutorController = function(app) {
         });
     };
 
+//TODO: delete if no more references?
 //  Removes the topic from the list of topics taught by a tutor
 //  @paramarg {String} tutorId       The ID of the tutor the topic is to be removed from.
 //  @paramarg {String} topicId       The ID of the topic is to be removed.
-//  @returns {Response}              The result of of the delete operation.
+//  @returns {Response}              The result of of the update operation.
     this.removeTopic = function (req, res, next) {
         var tutorId = req.params.tutorId;
         var topicId = req.params.topicId;
@@ -118,6 +117,68 @@ var TutorController = function(app) {
             });
         });
     };
+
+//  Gets all requests
+//  @returns {Response} All the requests in the database.
+    this.getRequests = function (req, res, next) {
+        Requests.find({}).exec(function (err, requests) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+            }
+            res.send({error: false, data: requests});
+        });
+    };
+
+
+    //this.respondToRequest
+
+//  Gets all reviews
+//  @returns {Response} All the reviews in the database.
+    this.getReviews = function (req, res, next) {
+        Reviews.find({}).exec(function (err, reviews) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+            }
+            res.send({error: false, data: reviews});
+        });
+    };
+
+
+    //this.flagReview
+
+//TODO: delete if no more references?
+//  Removes the review from the list of reviews for a tutor
+//  @paramarg {String} tutorId       The ID of the tutor the topic is to be removed from.
+//  @paramarg {String} topicId       The ID of the topic is to be removed.
+//  @returns {Response}              The result of the update operation.
+    this.removeReview = function (req, res, next) {
+        var tutorId = req.params.tutorId;
+        var reviewId = req.params.reviewId;
+
+        Tutors.findById(tutorId).exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            tutor.reviews.splice(tutor.reviews.indexOf(reviewId), 1);
+
+            tutor.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                activityLogger.logActivity(tutorId,"update tutor",review);
+                res.send({error: false, data: reviewId});
+            });
+        });
+    };
+
 
 };
 

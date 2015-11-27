@@ -62,6 +62,30 @@ module.exports = function(app) {
     app.get(root+'tutors',
         securityGate.checkIfUserIsSignedIn, tutorController.getTutors);
 
+    app.post(root+'tutors/:tutorId/topics',
+        securityGate.checkIfUserIsTutor, tutorController.addTopic);
+
+    app.get(root+'tutors/:tutorId/topics',
+        securityGate.checkIfUserIsSignedIn, tutorController.getTopics);
+
+    app.delete(root+'tutors/:tutorId/topics/:topicId',
+        securityGate.checkIfUserIsSignedIn, tutorController.removeTopic);
+
+    app.get(root+'tutors/:tutorId/requests',
+        securityGate.checkIfUserIsSignedIn, tutorController.getRequests);
+
+    app.put(root+'tutors/:tutorId/requests/:requestId',
+        securityGate.checkIfUserIsTutor, tutorController.respondToRequest);
+
+    app.get(root+'tutors/:tutorId/reviews',
+        securityGate.checkIfUserIsSignedIn, tutorController.getReviews);
+
+    app.put(root+'tutors/:tutorId/reviews/:reviewId',
+        securityGate.checkIfUserIsTutor, tutorController.flagReview);
+
+    app.delete(root+'tutors/:tutorId/reviews/:reviewId',
+        securityGate.checkIfUserIsAdmin, tutorController.removeReview);
+
     // Student Routes
 
     // Other User Routes
