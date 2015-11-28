@@ -22,7 +22,7 @@
                         <td><input ng-model="user.displayName" class="form-control" name="displayName" type="text"></td>
                     </div>
                 </tr>
-                <tr>
+                <tr ng-if="user.userType == 'Tutor'">
                     <div class="form-group" ng-class="{ 'has-error': form.rate.$invalid && !form.rate.$pristine}">
                         <th>Rate (per hour)</th>
                         <td><input ng-model="user.rate" class="form-control" name="rate" type="number" min="0.00" step="0.05" value="0.00"></td>
