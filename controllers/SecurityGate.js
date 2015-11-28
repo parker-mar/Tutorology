@@ -135,6 +135,33 @@ var SecurityGate = function(app) {
         }
     };
 
+    this.checkIfUserIsTutor = function (req,res,next) {
+        checkIfUserIsTutorOrStudent(req, res, next, 'Tutors');
+    };
+
+    this.checkIfUserIsStudent = function (req,res,next) {
+        checkIfUserIsTutorOrStudent(req, res, next, 'Students');
+    };
+
+    function checkIfUserIsTutorOrStudent (req, res, next, kind) {
+        var userId = req.session.userId;
+        if(typeof userId === "undefined") {
+            console.log("No user signed in");
+            res.status(401).send({error:true,message:"User is not signed in."});
+        } else {
+            Users.findById(userId, function (err, user) {
+                if (err) {
+                    console.log("ERROR:" + err);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                } else if (user.kind === kind) {
+                    next();
+                } else {
+                    console.log("User missing appropriate tutor or student privileges.");
+                    res.status(401).send({error: true, message: "User missing appropriate tutor or student privileges."});
+                }
+            });
+        }
+    }
 };
 
 module.exports = SecurityGate;

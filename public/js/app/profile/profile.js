@@ -62,7 +62,7 @@ angular.module('MyApp.profile', ['ngRoute'])
     // Promotes the user to "Admin" authorization level when called.
     $scope.makeUserAdmin = function () {
         $scope.user.authorization = "Admin";
-        $http.post('/api/users/'+$scope.user._id+'/setadmin',$scope.user).then(
+        $http.put('/api/users/'+$scope.user._id+'/setadmin',$scope.user).then(
             function successCallback(res) {
                 $rootScope.displayAlert('success','User has been promoted to Admin.');
             },
@@ -76,7 +76,7 @@ angular.module('MyApp.profile', ['ngRoute'])
     // Demotes the user to "User" authorization level when called.
     $scope.demoteToUser = function () {
         $scope.user.authorization = "User";
-        $http.post('/api/users/'+$scope.user._id+'/setadmin',$scope.user).then(
+        $http.put('/api/users/'+$scope.user._id+'/setadmin',$scope.user).then(
             function successCallback(res) {
                 $rootScope.displayAlert('success','User has been demoted.');
             },

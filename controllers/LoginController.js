@@ -4,6 +4,8 @@
 var LoginController = function(app) {
 
     var Users = app.models.Users;
+    var Tutors = app.models.Tutors;
+    var Students = app.models.Students;
     var Profiles = app.models.Profiles;
     var parse = require('user-agent-parser');
 
@@ -52,12 +54,14 @@ var LoginController = function(app) {
 //  @bodyarg {String} email         The email to register with.
 //  @bodyarg {String} pass          The password to register with.
 //  @bodyarg {String} confirmPass   The password confirmation. This must be the same as the password.
+//  @bodyarg {String} kind          The kind of user to register as.
 //  @returns {String} The registered user.
     this.register = function (req,res,next) {
         var email = req.body.email;
         var userType = req.body.userType;
         var pass = req.body.pass;
         var confirmPass = req.body.confirmPass;
+        var kind = req.body.kind;
         if(typeof email === "undefined") {
             var errMsg = "Error: Email not sent.";
             console.log(errMsg);
@@ -94,7 +98,16 @@ var LoginController = function(app) {
                                 console.log(err.message);
                                 res.status(500).send({error:true,message:"An internal server error occurred."});
                             }
-                            Users.create({
+
+                            // Create based on the kind of User.
+                            var Database = Users;
+                            if (kind == 'Tutor') {
+                                Database = Tutors;
+                            } else if (kind == 'Student') {
+                                Database = Students;
+                            }
+
+                            Database.create({
                                 email: email,
                                 password: pass,
                                 authorization: authorization,

@@ -50,7 +50,7 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
             angular.copy($scope.user, usertemp);
             // ensures that the image does not get sent on every request.
             delete usertemp.profile.image;
-            $http.post('/api/users/' + $routeParams.userId, usertemp).then(
+            $http.put('/api/users/' + $routeParams.userId, usertemp).then(
                 function successCallback(res) {
                     //trigger error message here.
                     console.log("Update Successful");
@@ -68,7 +68,7 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
     // Changes the current user's password when called.
     $scope.changePass = function() {
         $(".error").hide();
-        $http.post('/api/users/' + $routeParams.userId + '/changepass', $scope.passChange).then(
+        $http.put('/api/users/' + $routeParams.userId + '/changepass', $scope.passChange).then(
             function successCallback(res) {
                 //trigger error message here.
                 console.log("Update Successful");
@@ -89,7 +89,7 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
             var data = e.target.result;
             var base64Data = 'data:image/png;base64,' + $base64.encode(data);
             //send you binary data via $http or $resource or do anything else with it
-            $http.post('/api/users/' + $routeParams.userId, {profile:{image:base64Data}}).then(
+            $http.put('/api/users/' + $routeParams.userId, {profile:{image:base64Data}}).then(
                 function successCallback(res) {
                     //trigger error message here.
                     console.log("Update Successful");
