@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html ng-app="MyApp">
+<head>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <script src="js/jquery.min.js"></script>
+
+</head>
+<body>
+
+    <div class="container">
+
+        <div class="Row" style="margin-bottom: 50px">
+            <div class="col-lg-6">
+                <button class="btn btn-primary" style="width: 100%">Request</button>
+            </div>
+            <div class="col-lg-6">
+                <button class="btn btn-primary" style="width: 100%">Referrals <span class="badge">4</span></button>
+            </div>
+
+        </div>
+
+        <div class="Row" style="margin-bottom: 100px">
+            <div class="col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">Search</button>
+                    </span>
+                    <input type="text" class="form-control" placeholder="Search for Topics">
+                </div><!-- /input-group -->
+            </div><!-- /.col-lg-6 -->
+        </div>
+
+        <div ng-repeat="tutor in tutors">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <img src="http://www.arcaracing.com/assets/default_square_profile_pic.png"></img>
+                        </div>
+                        <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <span>Name: Arthur Przech </span>
+                            <br>
+                            <span>Topics: Python, JavaScript, C, Java, SQL
+                        </div> 
+                    </div>
+
+                
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <span> Rating: </span>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
+                            <span> Description: </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="container">
+        <div ng-repeat="tutor in tutors">
+            <div class="panel panel-default">
+                <div class="panel-body" style="background-color: #0088CC; color: white">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span>TOPIC</span>
+                            <span>NAME</span>
+                            <span>TIME</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="input-group" style="margin-bottom: 20px">
+                        <label class="radio-inline"><input type="radio" name="optradio">Accept</label>
+                        <label class="radio-inline"><input type="radio" name="optradio">Deny</label>
+                        <button class="btn btn-primary btn-lg" type="button">
+                            Respond
+                        </button>
+                    </div>
+
+                     <div class="form-group">
+                          <label for="comment">Request:</label>
+                          <textarea class="form-control" rows="3" id="comment" disabled></textarea>
+                    </div>
+
+                     <div class="form-group">
+                          <label for="comment">Response:</label>
+                          <textarea class="form-control" rows="3" id="comment"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            
+            <div class="panel panel-default">
+                <div class="panel-body" style="background-color: #51A351; color: white">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span>TOPIC</span>
+                            <span>NAME</span>
+                            <span>TIME</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+
+                    <div class="form-group">
+                          <label for="comment">Request:</label>
+                          <textarea class="form-control" rows="3" id="comment" disabled></textarea>
+                    </div>
+                     <div class="form-group">
+                          <label for="comment">Response:</label>
+                          <textarea class="form-control" rows="3" id="comment" disabled> TESTD</textarea>
+                    </div>
+
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body"style="background-color: #BD362F; color: white">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span>TOPIC</span>
+                            <span>NAME</span>
+                            <span>TIME</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-body"style="background-color: #BD362F; color: white">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span>TOPIC</span>
+                            <span>NAME</span>
+                            <span>TIME</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</body>
+
+
+
+
+
+
+
+
+
+
