@@ -19,24 +19,54 @@ angular.module('MyApp.login', ['ngRoute'])
 	// TODO - Finish HTML for student and tutor
 	// sendReqest function take in req object.
 
+    $scope.searchTopic =  function (){
+
+        $http.post('/api/get-tutors', {topicName =  $scope.searchTerm}).then(
+            function successCallback(res){
+                $scope.tutors = res.data.data;
+                });
+     
+
+    };
+
+    $scope.studentRequests = function () {  
+        window.location.href = '/#/requests';
+    };
+
+    $scope.studentReferrals = function () {
+        window.location.href = '/#/referrals';
+    };
+
+    // send a response for request.
+    $scope.sendRequest =  function (req){
+
+        // Check if already has responses
+        if (!req.hasResponse){
+            $http.put('/api/' + $rootScope.actor.id + '/requests/' + req.id
+                ,{response: req.response, message: req.resMessage}).then(                   
+                function successCallback(res){
+                        req.hasResponse = true;
+                    });
+        }
+    };
+
 	$http.get('/api/actor').then(
         function successCallback(res){
             $rootScope.actor = res.data.data;
-
             // If actor is student default response is to send reconmmended Tutors
             if ($rootScope.actor.userType == 'Student'){
-            	$http.get('/api/getRecommendedTutors/').then(
+            	$http.get('/api/students/' + $rootScope.actor.student_id + '/getRecommendedTutors/').then(
             		function successCallback(res){
-            			$scope.tutors = res;
+            			$scope.tutors = res.data.data;
             			$scope.userType = 'Student';
             		});
 
             // If actor is tutor get all requests and add attributes 
             // for display.
             } else if ($rootScope.actor.userType == 'Tutor') {
-            	$http.get('/api/getRequests/').then(
+            	$http.get('/api/'+ $rootScope.actor.tutor_id + '/getRequests/').then(
             		function successCallback(res){
-            			$scope.requests = res;
+            			$scope.requests = res.data.data;
             			for (i = 0; i < scope.requests.length; i++){
             				scope.requests[i].active = false;
             				scope.requests[i].response = false;
