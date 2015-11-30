@@ -22,10 +22,10 @@
                         <td><input ng-model="user.displayName" class="form-control" name="displayName" type="text"></td>
                     </div>
                 </tr>
-                <tr ng-if="user.userType == 'Tutor'">
+                <tr ng-if="user.userType == 'Tutors'">
                     <div class="form-group" ng-class="{ 'has-error': form.rate.$invalid && !form.rate.$pristine}">
                         <th>Rate (per hour)</th>
-                        <td><input ng-model="user.rate" class="form-control" name="rate" type="number" min="0.00" step="0.05" value="0.00"></td>
+                        <td><input ng-model="user.charge" class="form-control" name="charge" type="number" min="0.00" step="0.05" value="0.00"></td>
                     </div>
                 </tr>
                 <tr>
@@ -43,16 +43,31 @@
 <div class="row">
     <div class="col-xs-8">
         <h2>Topics</h2>
-        <div ng-repeat="topic in user.topics" class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{topic.name}}</h3>
-                <button class="btn btn-default" ng-click="removeTopic(topic.name)">Remove</button>
-            </div>
-        </div>
-        <div class="panel-heading">
-            <h3 class="panel-title">Topic</h3>
-            <input ng-model="user.displayName" class="form-control" name="displayName" type="text">
-            <button class="btn btn-default" ng-click="addTopic(topic.name)">Add Topic</button>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Topics</div>
+            <!--<div class="panel-body">-->
+            <!--</div>-->
+
+            <!-- Table -->
+            <table class="table">
+                <thead>
+                <!--<tr>-->
+                    <!--<th>Topic</th>-->
+                    <!--<th></th>-->
+                <!--</tr>-->
+                </thead>
+                <tbody>
+                    <tr ng-repeat="topic in user.topics">
+                        <td>{{topic.name}}</td>
+                        <td><button class="btn btn-default" ng-click="removeTopic(topic)">Remove</button></td>
+                    </tr>
+                    <tr>
+                        <td><input ng-model="newTopic.topicName" class="form-control" name="newTopic" type="text"></td>
+                        <td><button class="btn btn-default" ng-click="addTopic()">Add Topic</button></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
