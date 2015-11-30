@@ -3,10 +3,12 @@
  */
 module.exports = function(app){
     var RequestSchema = new app.mongoose.Schema({
-        studentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        last_updated: { type: Date, required: true, default: Date.now },
+        studentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
+        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors'},
+        topicId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'},
+        created_at: { type: Date, required: true, default: Date.now },
         message: String,
+        hasResponse: Boolean,
         accepted: Boolean,
         response: String
     });

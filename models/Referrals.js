@@ -3,9 +3,9 @@
  */
 module.exports = function(app){
     var ReferralSchema = new app.mongoose.Schema({
-        fromStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        toStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
+        fromStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
+        toStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
+        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors'},
         created_at: { type: Date, required: true, default: Date.now },
         message: String,
         isRead: Boolean

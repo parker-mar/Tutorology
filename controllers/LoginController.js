@@ -58,10 +58,9 @@ var LoginController = function(app) {
 //  @returns {String} The registered user.
     this.register = function (req,res,next) {
         var email = req.body.email;
-        var userType = req.body.userType;
         var pass = req.body.pass;
         var confirmPass = req.body.confirmPass;
-        var kind = req.body.kind;
+        var userType = req.body.userType;
         if(typeof email === "undefined") {
             var errMsg = "Error: Email not sent.";
             console.log(errMsg);
@@ -101,20 +100,20 @@ var LoginController = function(app) {
 
                             // Create based on the kind of User.
                             var Database = Users;
-                            if (kind == 'Tutor') {
-                                Database = Tutors;
-                            } else if (kind == 'Student') {
-                                Database = Students;
-                            }
-
-                            Database.create({
+                            var attributes = {
                                 email: email,
                                 password: pass,
                                 authorization: authorization,
-                                rate: 0.00,
-                                userType: userType,
                                 profile: profile._id
-                            },function(err,user) {
+                            };
+                            if (userType == 'Tutor') {
+                                Database = Tutors;
+                                attributes.charge = 0.00;
+                            } else if (userType == 'Student') {
+                                Database = Students;
+                            }
+
+                            Database.create(attributes, function(err,user) {
                                 if(err){
                                     console.log(err.message);
                                     res.status(500).send({error:true,message:"An internal server error occurred."});
