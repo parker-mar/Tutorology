@@ -56,5 +56,7 @@ require('./routes')(app);
 
 app.listen(3000,'0.0.0.0');
 
+module.exports = app;
+
 // Console will print the message
 console.log('Server running at http://127.0.0.1:3000/');

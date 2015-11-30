@@ -322,6 +322,10 @@ var TutorController = function(app) {
         res.status(500).send({error: true, message: "Feature not implemented"});
     };
 
+    this.createReview = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
+    };
+
     this.flagReview = function (req,res,next) {
         res.status(500).send({error: true, message: "Feature not implemented"});
     };

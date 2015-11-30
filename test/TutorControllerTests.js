@@ -4,16 +4,16 @@
 
 var http = require("http");
 var assert = require("assert");
-var server = require("./server.js");
+var server = require("../server.js");
 
 describe("Server tests", function() {
-    before(function() {
-        server.listen(8989);
-    });
+//    before(function() {
+//        server.listen(8989);
+//    });
 
-    after(function() {
-        server.close();
-    });
+//    after(function() {
+//        server.close();
+//    });
 
     describe("/", function() {
         it("Should be 'Hello, Mocha'", function(done) {

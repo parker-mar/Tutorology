@@ -83,6 +83,9 @@ module.exports = function(app) {
     app.put(root+'tutors/:tutorId/requests/:requestId/respond',
         securityGate.checkIfUserIsTutor, tutorController.respondToRequest);
 
+    app.post(root+'tutors/:tutorId/reviews',
+        securityGate.checkIfUserIsStudent, tutorController.createReview);
+
     app.get(root+'tutors/:tutorId/reviews',
         securityGate.checkIfUserIsSignedIn, tutorController.getReviews);
 
