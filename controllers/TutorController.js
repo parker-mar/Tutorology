@@ -17,6 +17,8 @@ var TutorController = function(app) {
                 return;
             }
 
+            //console.log(tutors);
+
             res.send({error: false, data: tutors});
         });
     }
@@ -64,72 +66,70 @@ var TutorController = function(app) {
 // @bodyarg {String} topicName      The name of the topic.
 // @returns {Response}              The result of of the create operation.
     this.addTopic = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //var topicName = req.body.topicName;
-        //
-        //if (typeof topicName === "undefined") {
-        //    var errMsg = "Error: topicName unspecified.";
-        //    console.log(errMsg);
-        //    res.status(400).send({error: true, message: errMsg});
-        //    return;
-        //}
-        //
-        //// Upsert the topic
-        //Topics.findOrCreate({name:topicName}, {$setOnInsert:{name:topicName}}, {upsert:true}, function (err, topic) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error:true,message:"An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    // Add it to the list of topics taught by the tutor, if it isn't there already.
-        //    Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
-        //        if (err) {
-        //            console.log(err.message);
-        //            res.status(500).send({error: true, message: "An internal server error occurred."});
-        //            return;
-        //        }
-        //
-        //        if (tutor.topics.indexOf(topic._id) > -1) {
-        //            var errMsg = "Error: topic already added.";
-        //            console.log(errMsg);
-        //            res.status(400).send({error: true, message: errMsg});
-        //            return;
-        //        }
-        //
-        //        tutor.topics.push(topic);
-        //
-        //        tutor.save(function (err) {
-        //            if (err) {
-        //                console.log(err.message);
-        //                res.status(500).send({error: true, message: "An internal server error occurred."});
-        //                return;
-        //            }
-        //
-        //            activityLogger.logActivity(tutorId,"update tutor",tutor);
-        //            res.send({error: false, data: topic});
-        //        });
-        //    });
-        //});
+        var tutorId = req.params.tutorId;
+        var topicName = req.body.topicName;
+
+        if (typeof topicName === "undefined") {
+            var errMsg = "Error: topicName unspecified.";
+            console.log(errMsg);
+            res.status(400).send({error: true, message: errMsg});
+            return;
+        }
+
+        // Upsert the topic
+        Topics.findOrCreate({name:topicName}, {$setOnInsert:{name:topicName}}, {upsert:true}, function (err, topic) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error:true,message:"An internal server error occurred."});
+                return;
+            }
+
+            // Add it to the list of topics taught by the tutor, if it isn't there already.
+            Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                if (tutor.topics.indexOf(topic._id) > -1) {
+                    var errMsg = "Error: topic already added.";
+                    console.log(errMsg);
+                    res.status(400).send({error: true, message: errMsg});
+                    return;
+                }
+
+                tutor.topics.push(topic);
+
+                tutor.save(function (err) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                        return;
+                    }
+
+                    activityLogger.logActivity(tutorId,"update tutor",tutor);
+                    res.send({error: false, data: topic});
+                });
+            });
+        });
     };
 
 //  Gets all topics taught by the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
 //  @returns {Response}             All the topics taught by the tutor with ID tutorId.
     this.getTopics = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //
-        //Tutors.findById(tutorId, Tutors.defaultFilter).populate('topics').exec(function (err, tutor) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    res.send({error: false, data: tutor.topics});
-        //});
+        var tutorId = req.params.tutorId;
+
+        Tutors.findById(tutorId, Tutors.defaultFilter).populate('topics').exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            res.send({error: false, data: tutor.topics});
+        });
     };
 
 

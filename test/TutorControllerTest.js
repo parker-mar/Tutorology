@@ -5,10 +5,12 @@
 
 var should = require('should');
 var assert = require('assert');
-var request = require('supertest');
 var mongoose = require('mongoose');
-app = require('../server.js');
+var request = require('supertest');
+var server = request.agent('http://127.0.0.1:3000');
+var app = require('../server.js');
 
+var Users = app.models.Users;
 var Tutors = app.models.Tutors;
 var Topics = app.models.Topics;
 var Requests = app.models.Requests;
@@ -17,33 +19,34 @@ var Profiles = app.models.Profiles;
 
 describe('Tutor Controller Test', function() {
 
-    var url = 'http://127.0.0.1:3000/';
-
+    /* Shared Variables */
     var physChemTutor = {
         email: 'physchem@physchem.com',
-        pass: 'physchem',
-        confirmPass: 'physchem',
+        pass: '1',
+        confirmPass: '1',
         userType: 'Tutor',
         charge: 0.00
     };
 
     var physTutor = {
         email: 'phys@phys.com',
-        pass: 'phys',
-        confirmPass: 'phys',
+        pass: '1',
+        confirmPass: '1',
         userType: 'Tutor',
         charge: 0.00
     };
 
     var chemTutor = {
         email: 'chem@chem.com',
-        pass: 'chem',
-        confirmPass: 'chem',
+        pass: '1',
+        confirmPass: '1',
         userType: 'Tutor',
         charge: 0.00
     };
 
+    /* Test helper functions */
     function createTutor(tutorArg) {
+        tutorArg.password = tutorArg.pass;
         Tutors.create(tutorArg, function(err, tutor) {
             if(err){
                 should.fail(err.message);
@@ -51,31 +54,46 @@ describe('Tutor Controller Test', function() {
             delete tutor._doc.password;
             delete tutor._doc.__v;
             tutorArg.tutor = tutor;
+            console.log(tutor);
+
+            if (tutor) {
+                console.log("yes");
+            } else {
+                console.log("no");
+            }
+        });
+
+        Tutors.find({}).exec(function (err, tutors) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            if (tutors.length > 0) {
+                console.log("yes");
+            } else {
+                console.log("no");
+            }
+
+            console.log(tutors);
         });
     }
 
     function deleteTutor(tutorArg) {
-        Profiles.remove({_id: tutorArg.tutor.profile._id}, function (err) {
+
+        // For some reason, can't remove from Tutors model.
+        Users.remove({_id: tutorArg.tutor._id}, function (err) {
             if (err) {
                 console.log(err.message);
             } else {
-                Tutors.remove({_id: tutorArg.tutor._id}, function (err) {
-                    if (err) {
-                        console.log(err.message);
-                    } else {
-                        console.log("tutor " + tutorArg.tutor._id + " Removed Successfully");
-                    }
-                });
+                console.log("tutor " + tutorArg.tutor._id + " Removed Successfully");
             }
         });
     }
 
+    /* Before all */
     before(function(done) {
-        mongoose.connect('mongodb://localhost/bazahmed', {
-            user: '',
-            pass: ''
-        });
-
         createTutor(physChemTutor);
         createTutor(physTutor);
         createTutor(chemTutor);
@@ -83,8 +101,8 @@ describe('Tutor Controller Test', function() {
         done();
     });
 
+    /* After all */
     after(function(done) {
-        mongoose.disconnect();
 
         deleteTutor(physChemTutor);
         deleteTutor(physTutor);
@@ -93,22 +111,41 @@ describe('Tutor Controller Test', function() {
         done();
     });
 
+    /* Test getTutors */
     describe('Test getTutors', function() {
-        it('Get all tutors (empty query)', function(done){
-            request(url)
-                .post('get-tutors')
-                .expect(400)
-                .end(function (err, res) {
-                    if (err) {
-                        throw err;
-                    }
 
-                    res.indexOf(physChemTutor.tutor).should.be.greaterThan(-1);
-                    res.indexOf(chemTutor.tutor).should.be.greaterThan(-1);
-                    res.indexOf(physTutor.tutor).should.be.greaterThan(-1);
+        it('Login', function(done) {
+            server
+                .post('/api/login')
+                .send(physChemTutor)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data.should.have.property("email", physChemTutor.email);
+                })
+                .end(done);
+        });
 
-                    done();
-                });
+        it('Get all tutors', function(done) {
+            server
+                .post('/api/get-tutors')
+                .expect(200)
+                .expect(function(res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
+
+                    tutorIds.indexOf(physChemTutor.tutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physTutor.tutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(chemTutor.tutor._id.toString()).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+
+        it('Logout', function(done) {
+            server
+                .post('/api/logout')
+                .expect(200)
+                .end(done);
         });
 
         //it('Get tutor by name', function(done){
