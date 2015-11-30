@@ -112,4 +112,11 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
     $scope.cancelling = function() {
         window.location.href = '/#/users/'+$scope.user._id+'/profile';
     };
+
+    $scope.addTopic = function(topicDetail){
+
+    };
+    $scope.removeTopic = function(topicName){
+
+    };
 }]);
