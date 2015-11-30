@@ -75,7 +75,7 @@ var TutorController = function(app) {
         }
 
         // Upsert the topic
-        Topics.findOneAndUpdate({name:topicName}, {$setOnInsert:{name:topicName}}, {upsert:true}, function (err, topic) {
+        Topics.findOrCreate({name:topicName}, {$setOnInsert:{name:topicName}}, {upsert:true}, function (err, topic) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error:true,message:"An internal server error occurred."});
@@ -119,7 +119,7 @@ var TutorController = function(app) {
     this.getTopics = function (req, res, next) {
         var tutorId = req.params.tutorId;
 
-        Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
+        Tutors.findById(tutorId, Tutors.defaultFilter).populate('topics').exec(function (err, tutor) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error: true, message: "An internal server error occurred."});
@@ -307,6 +307,27 @@ var TutorController = function(app) {
                 res.send({error: false, data: reviewId});
             });
         });
+    };
+
+    this.respondToRequest = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
+    };
+
+    this.updateRequest = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
+    };
+
+
+    this.createRequest = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
+    };
+
+    this.createReview = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
+    };
+
+    this.flagReview = function (req,res,next) {
+        res.status(500).send({error: true, message: "Feature not implemented"});
     };
 
 };

@@ -33,7 +33,7 @@ var UserController = function(app) {
     this.updateUser = function (req, res, next) {
         var userId = req.params.userId;
         var displayName = req.body.displayName;
-        var rate = req.body.rate;
+        var charge = req.body.charge;
         var description = req.body.profile.description;
         var image = req.body.profile.image;
         var actorId = req.session.userId;
@@ -43,8 +43,8 @@ var UserController = function(app) {
                 if (typeof displayName !== 'undefined')
                     user.displayName = displayName;
 
-                if (typeof rate !== 'undefined')
-                    user.rate = rate;
+                if (typeof charge !== 'undefined')
+                    user.charge = charge;
 
 
                 user.save(function (err) {

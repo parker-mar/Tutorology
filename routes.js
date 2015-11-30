@@ -71,11 +71,20 @@ module.exports = function(app) {
     app.delete(root+'tutors/:tutorId/topics/:topicId',
         securityGate.checkIfUserIsSignedIn, tutorController.removeTopic);
 
+    app.post(root+'tutors/:tutorId/requests',
+        securityGate.checkIfUserIsStudent, tutorController.createRequest);
+
     app.get(root+'tutors/:tutorId/requests',
         securityGate.checkIfUserIsSignedIn, tutorController.getRequests);
 
     app.put(root+'tutors/:tutorId/requests/:requestId',
+        securityGate.checkIfUserIsStudent, tutorController.updateRequest);
+
+    app.put(root+'tutors/:tutorId/requests/:requestId/respond',
         securityGate.checkIfUserIsTutor, tutorController.respondToRequest);
+
+    app.post(root+'tutors/:tutorId/reviews',
+        securityGate.checkIfUserIsStudent, tutorController.createReview);
 
     app.get(root+'tutors/:tutorId/reviews',
         securityGate.checkIfUserIsSignedIn, tutorController.getReviews);

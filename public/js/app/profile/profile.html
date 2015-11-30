@@ -29,6 +29,57 @@
             </tr>
         </table>
     </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <h2>Topics</h2>
+            <div ng-repeat="topic in user.topics" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{topic.name}}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-8">
+            <h2>Reviews</h2>
+            <div ng-repeat="review in user.reviews" class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{user.displayName}}  {{review.rating}}</h3>
+                </div>
+                <div class="panel-body">
+                    {{review.message}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row"  ng-if="user.userType == 'Student'">
+        <div class="col-xs-8">
+            <h2>Refer a student</h2>
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                        <form data-toggle="validator" role="form" name="form">
+                            <table class="table">
+                                <tr>
+                                    <div class="form-group" ng-class="{ 'has-error': form.referredTo.$invalid && !form.referredTo.$pristine}">
+                                        <th>Referred To</th>
+                                        <td><input ng-model="referral.displayName" class="form-control" name="referredTo" type="text"></td>
+                                    </div>
+                                </tr>
+                                <tr>
+                                    <div class="form-group" ng-class="{ 'has-error': form.message.$invalid && !form.message.$pristine}">
+                                        <th>Message</th>
+                                        <td><textarea ng-model="referral.message" class="form-control" name="message" style="resize:vertical;"></textarea></td>
+                                    </div>
+                                </tr>
+                            </table>
+                            <button class="btn btn-primary" ng-click="referencing()">Update</button>
+                        </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
     <div ng-if="actor.authorization=='Admin' || actor.authorization =='SAdmin'" class="col-xs-8">
         <div class="panel panel-default">
             <!-- Default panel contents -->

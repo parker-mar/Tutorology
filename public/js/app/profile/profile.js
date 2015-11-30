@@ -86,4 +86,8 @@ angular.module('MyApp.profile', ['ngRoute'])
             }
         );
     };
+
+    $scope.referencing = function(){
+
+    };
 }]);

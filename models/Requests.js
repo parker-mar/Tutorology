@@ -2,6 +2,7 @@
  * Created by parkeraldricmar on 15-11-25.
  */
 module.exports = function(app){
+    var findOrCreate = require('mongoose-findorcreate')
     var RequestSchema = new app.mongoose.Schema({
         studentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
         tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors'},
@@ -12,6 +13,8 @@ module.exports = function(app){
         accepted: Boolean,
         response: String
     });
+
+    RequestSchema.plugin(findOrCreate);
 
     return app.mongoose.model('Requests', RequestSchema);
 };
