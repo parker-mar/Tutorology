@@ -5,7 +5,7 @@ module.exports = function(app){
     var TutorSchema = new app.mongoose.Schema({
         charge: { type: Number, min: 0 },
         rating: { type: Number, min: 0 }
-    }, { discriminatorKey: 'kind' });
+    }, { discriminatorKey: 'userType' });
 
     var TutorsModel = app.models['Users'].discriminator('Tutors', TutorSchema);
 

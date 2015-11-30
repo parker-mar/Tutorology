@@ -17,7 +17,7 @@ module.exports = function(app){
         reviews: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Reviews'}],
         topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
         referrals: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Referrals'}]
-    }, { discriminatorKey: 'kind' });
+    }, { discriminatorKey: 'userType' });
 
     var UsersModel = app.mongoose.model('Users', UserSchema);
 

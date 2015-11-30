@@ -59,7 +59,7 @@ module.exports = function(app) {
         securityGate.checkIfUserIsSAdmin,userController.setAuthorization);
 
     // Tutor Routes
-    app.get(root+'tutors',
+    app.post(root+'get-tutors',
         securityGate.checkIfUserIsSignedIn, tutorController.getTutors);
 
     app.post(root+'tutors/:tutorId/topics',
