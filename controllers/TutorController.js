@@ -20,8 +20,7 @@ var TutorController = function(app) {
             res.send({error: false, data: tutors});
         });
     }
-
-
+    
 //  Gets tutors according to query, or all if none.
 //  @bodyarg {String} name      The tutor's name to query by (optional).
 //  @bodyarg {String} topicName The tutor's topicName to query by (optional).
