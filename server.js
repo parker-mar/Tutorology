@@ -16,7 +16,7 @@ var uuid = require('uuid');
 
 app.mongoose = mongoose;
 
-//To connect to MongoDB's  database
+//To connect to MongoDB's database
 mongoose.connect('mongodb://localhost/bazahmed', {
     user: '',
     pass: ''

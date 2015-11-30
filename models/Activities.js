@@ -2,7 +2,8 @@
  * Created by ahmedel-baz on 15-11-07.
  */
 module.exports = function(app){
-    var findOrCreate = require('mongoose-findorcreate')
+    var findOrCreate = require('mongoose-findorcreate');
+
     var ActivitySchema = new app.mongoose.Schema({
         actor: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
         type: String,

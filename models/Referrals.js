@@ -2,7 +2,8 @@
  * Created by parkeraldricmar on 15-11-25.
  */
 module.exports = function(app){
-    var findOrCreate = require('mongoose-findorcreate')
+    var findOrCreate = require('mongoose-findorcreate');
+
     var ReferralSchema = new app.mongoose.Schema({
         fromStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
         toStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},

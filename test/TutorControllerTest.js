@@ -7,7 +7,7 @@ var should = require('should');
 var assert = require('assert');
 var request = require('supertest');
 var mongoose = require('mongoose');
-require('../server.js');
+app = require('../server.js');
 
 var Tutors = app.models.Tutors;
 var Topics = app.models.Topics;
@@ -55,15 +55,15 @@ describe('Tutor Controller Test', function() {
     }
 
     function deleteTutor(tutorArg) {
-        Profiles.remove({_id: tutorArg.profile._id}, function (err) {
+        Profiles.remove({_id: tutorArg.tutor.profile._id}, function (err) {
             if (err) {
                 console.log(err.message);
             } else {
-                Tutors.remove({_id: tutorArg._id}, function (err) {
+                Tutors.remove({_id: tutorArg.tutor._id}, function (err) {
                     if (err) {
                         console.log(err.message);
                     } else {
-                        console.log("tutor " + tutorArg._id + " Removed Successfully");
+                        console.log("tutor " + tutorArg.tutor._id + " Removed Successfully");
                     }
                 });
             }

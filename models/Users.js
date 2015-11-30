@@ -2,7 +2,8 @@
  * Created by ahmedel-baz on 15-11-05.
  */
 module.exports = function(app){
-    var findOrCreate = require('mongoose-findorcreate')
+    var findOrCreate = require('mongoose-findorcreate');
+
     var UserSchema = new app.mongoose.Schema({
         // Account details
         email: {type: String, index: {unique: true, dropDups: true}},

@@ -2,7 +2,8 @@
  * Created by parkeraldricmar on 15-11-26.
  */
 module.exports = function(app){
-    var findOrCreate = require('mongoose-findorcreate')
+    var findOrCreate = require('mongoose-findorcreate');
+
     var TutorSchema = new app.mongoose.Schema({
         charge: { type: Number, min: 0 },
         rating: { type: Number, min: 0 }

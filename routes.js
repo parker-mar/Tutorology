@@ -15,6 +15,9 @@ module.exports = function(app) {
     var TutorController = require("./controllers/TutorController");
     var tutorController = new TutorController(app);
 
+    var StudentController = require("./controllers/StudentController");
+    var studentController = new StudentController(app);
+
     var AnalyticsController = require("./controllers/AnalyticsController");
     var analyticsController = new AnalyticsController(app);
 
@@ -69,22 +72,13 @@ module.exports = function(app) {
         securityGate.checkIfUserIsSignedIn, tutorController.getTopics);
 
     app.delete(root+'tutors/:tutorId/topics/:topicId',
-        securityGate.checkIfUserIsSignedIn, tutorController.removeTopic);
-
-    app.post(root+'tutors/:tutorId/requests',
-        securityGate.checkIfUserIsStudent, tutorController.createRequest);
+        securityGate.checkIfUserIsTutor, tutorController.removeTopic);
 
     app.get(root+'tutors/:tutorId/requests',
         securityGate.checkIfUserIsSignedIn, tutorController.getRequests);
 
     app.put(root+'tutors/:tutorId/requests/:requestId',
-        securityGate.checkIfUserIsStudent, tutorController.updateRequest);
-
-    app.put(root+'tutors/:tutorId/requests/:requestId/respond',
         securityGate.checkIfUserIsTutor, tutorController.respondToRequest);
-
-    app.post(root+'tutors/:tutorId/reviews',
-        securityGate.checkIfUserIsStudent, tutorController.createReview);
 
     app.get(root+'tutors/:tutorId/reviews',
         securityGate.checkIfUserIsSignedIn, tutorController.getReviews);
@@ -96,6 +90,29 @@ module.exports = function(app) {
         securityGate.checkIfUserIsAdmin, tutorController.removeReview);
 
     // Student Routes
+    app.get(root+'students',
+        securityGate.checkIfUserIsSignedIn, studentController.getStudents);
+
+    app.post(root+'students/:studentId/requests',
+        securityGate.checkIfUserIsStudent, studentController.makeRequest);
+
+    app.get(root+'students/:studentId/requests',
+        securityGate.checkIfUserIsSignedIn, studentController.getRequests);
+
+    app.post(root+'students/:studentId/reviews',
+        securityGate.checkIfUserIsStudent, studentController.makeReview);
+
+    app.post(root+'students/:studentId/referrals',
+        securityGate.checkIfUserIsStudent, studentController.makeReferral);
+
+    app.get(root+'students/:studentId/referrals',
+        securityGate.checkIfUserIsSignedIn, studentController.getReferrals);
+
+    app.put(root+'students/:studentId/referrals/:referralId',
+        securityGate.checkIfUserIsSignedIn, studentController.markReferralRead);
+
+    app.get(root+'students/:studentId/recommendations',
+        securityGate.checkIfUserIsSignedIn, studentController.getRecommendations);
 
     // Other User Routes
     app.get(root+'actor',
