@@ -56,6 +56,10 @@ describe('Tutor Controller Test', function() {
         name: 'chem_test'
     };
 
+    var topicToAdd = {
+        name: 'eng_test'
+    };
+
     /* Test helper functions */
     function createTutor(tutorArg) {
         tutorArg.password = tutorArg.pass;
@@ -171,6 +175,7 @@ describe('Tutor Controller Test', function() {
             .end(done);
     });
 
+
     /* Test getTutors */
     describe('Test getTutors', function() {
 
@@ -248,5 +253,76 @@ describe('Tutor Controller Test', function() {
                 .end(done);
         });
     });
+
+    /* Test addTopic */
+    describe('Test addTopic', function() {
+
+        it('Add a topic', function(done) {
+            server
+                .post('/api/tutors/' + physChemTutor._id + '/topics')
+                .send({
+                    topicName: topicToAdd.name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var topic = res.body.data;
+
+                    topic.name.should.equal(topicToAdd.name);
+
+                    topicToAdd._id = topic._id;
+                })
+                .end(done);
+        });
+
+        it("Check that the topic is added to list of tutor's topics", function(done) {
+            server
+                .get('/api/tutors/' + physChemTutor._id + '/topics')
+                .expect(200)
+                .expect(function(res) {
+                    var topicNames = res.body.data.map(function(topic) {
+                        return topic.name;
+                    });
+
+                    topicNames.indexOf(phys.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(chem.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(topicToAdd.name).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+
+        it('Remove the topic', function(done) {
+            server
+                .delete('/api/tutors/' + physChemTutor._id + '/topics/' + topicToAdd._id)
+                .expect(200)
+                .expect(function(res) {
+                    var topicId = res.body.data;
+
+                    topicId.should.equal(topicToAdd._id);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test getTopics */
+    describe('Test getTopics', function() {
+
+        it('Get all topics', function(done) {
+            server
+                .get('/api/tutors/' + physChemTutor._id + '/topics')
+                .expect(200)
+                .expect(function(res) {
+                    var topicNames = res.body.data.map(function(topic) {
+                        return topic.name;
+                    });
+
+                    topicNames.indexOf(phys.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(chem.name).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+    });
+
+    
+
 
 });

@@ -137,30 +137,29 @@ var TutorController = function(app) {
 //  @paramarg {String} topicId       The ID of the topic is to be removed.
 //  @returns {Response}              The result of of the update operation.
     this.removeTopic = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //var topicId = req.params.topicId;
-        //
-        //Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    tutor.topics.splice(tutor.topics.indexOf(topicId), 1);
-        //
-        //    tutor.save(function (err) {
-        //        if (err) {
-        //            console.log(err.message);
-        //            res.status(500).send({error: true, message: "An internal server error occurred."});
-        //            return;
-        //        }
-        //
-        //        activityLogger.logActivity(tutorId,"update tutor",tutor);
-        //        res.send({error: false, data: topicId});
-        //    });
-        //});
+        var tutorId = req.params.tutorId;
+        var topicId = req.params.topicId;
+
+        Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            tutor.topics.splice(tutor.topics.indexOf(topicId), 1);
+
+            tutor.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                activityLogger.logActivity(tutorId,"update tutor",tutor);
+                res.send({error: false, data: topicId});
+            });
+        });
     };
 
 //  Gets all requests made to the tutor with ID tutorId.
