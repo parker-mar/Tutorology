@@ -5,6 +5,7 @@
 
 var should = require('should');
 var assert = require('assert');
+var async = require("async");
 var mongoose = require('mongoose');
 var request = require('supertest');
 var server = request.agent('http://127.0.0.1:3000');
@@ -21,109 +22,157 @@ describe('Tutor Controller Test', function() {
 
     /* Shared Variables */
     var physChemTutor = {
-        email: 'physchem@physchem.com',
+        email: 'physchem@physchem_test.com',
         pass: '1',
         confirmPass: '1',
-        userType: 'Tutor',
+        displayName: 'physChemTutor',
+        topics: [],
         charge: 0.00
     };
 
     var physTutor = {
-        email: 'phys@phys.com',
+        email: 'phys@phys_test.com',
         pass: '1',
         confirmPass: '1',
-        userType: 'Tutor',
+        displayName: 'physTutor',
+        topics: [],
         charge: 0.00
     };
 
     var chemTutor = {
-        email: 'chem@chem.com',
+        email: 'chem@chem_test.com',
         pass: '1',
         confirmPass: '1',
-        userType: 'Tutor',
+        displayName: 'chemTutor',
+        topics: [],
         charge: 0.00
+    };
+
+    var phys = {
+        name: 'phys_test'
+    };
+
+    var chem = {
+        name: 'chem_test'
     };
 
     /* Test helper functions */
     function createTutor(tutorArg) {
         tutorArg.password = tutorArg.pass;
+
         Tutors.create(tutorArg, function(err, tutor) {
-            if(err){
+            if (err) {
                 should.fail(err.message);
             }
             delete tutor._doc.password;
             delete tutor._doc.__v;
-            tutorArg.tutor = tutor;
-            console.log(tutor);
+            tutorArg._id = tutor._id;
+        });
+    }
 
-            if (tutor) {
-                console.log("yes");
+    function deleteTutor(tutorArg) {
+        Tutors.remove({_id: tutorArg._id}, function (err) {
+            if (err) {
+                console.log(err.message);
             } else {
-                console.log("no");
+                console.log("tutor " + tutorArg._id + " Removed Successfully");
             }
         });
+    }
 
-        Tutors.find({}).exec(function (err, tutors) {
+    function createTopic(topicArg) {
+        Topics.create(topicArg, function(err, topic) {
+            if (err) {
+                should.fail(err.message);
+            }
+            topicArg._id = topic._id;
+        });
+    }
+
+    function deleteTopic(topicArg) {
+        Topics.remove({_id: topicArg._id}, function (err) {
+            if (err) {
+                console.log(err.message);
+            } else {
+                console.log("topic " + topicArg._id + " Removed Successfully");
+            }
+        });
+    }
+
+    function addTopic(tutorArg, topicArg) {
+
+        Tutors.findById(tutorArg._id, Tutors.defaultFilter).exec(function (err, tutor) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error: true, message: "An internal server error occurred."});
                 return;
             }
 
-            if (tutors.length > 0) {
-                console.log("yes");
-            } else {
-                console.log("no");
-            }
+            tutorArg.topics.push(topicArg._id);
 
-            console.log(tutors);
-        });
-    }
+            tutor.topics.push(topicArg._id);
 
-    function deleteTutor(tutorArg) {
-
-        // For some reason, can't remove from Tutors model.
-        Users.remove({_id: tutorArg.tutor._id}, function (err) {
-            if (err) {
-                console.log(err.message);
-            } else {
-                console.log("tutor " + tutorArg.tutor._id + " Removed Successfully");
-            }
+            tutor.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+            });
         });
     }
 
     /* Before all */
     before(function(done) {
-        createTutor(physChemTutor);
-        createTutor(physTutor);
-        createTutor(chemTutor);
+        async.series([
+            function(cb) { createTutor(physChemTutor); cb(null, null); },
+            function(cb) { createTutor(physTutor); cb(null, null); },
+            function(cb) { createTutor(chemTutor); cb(null, null); },
 
-        done();
+            function(cb) { createTopic(phys); cb(null, null); },
+            function(cb) { createTopic(chem); cb(null, null); },
+
+            function(cb) { addTopic(physChemTutor, phys); cb(null, null); },
+            function(cb) { addTopic(physChemTutor, chem); cb(null, null); },
+            function(cb) { addTopic(physTutor, phys); cb(null, null); },
+            function(cb) { addTopic(chemTutor, chem); cb(null, null); }
+        ], done);
     });
 
     /* After all */
     after(function(done) {
+        async.series([
+            function(cb) { deleteTutor(physChemTutor); cb(null, null); },
+            function(cb) { deleteTutor(physTutor); cb(null, null); },
+            function(cb) { deleteTutor(chemTutor); cb(null, null); },
 
-        deleteTutor(physChemTutor);
-        deleteTutor(physTutor);
-        deleteTutor(chemTutor);
+            function(cb) { deleteTopic(phys); cb(null, null); },
+            function(cb) { deleteTopic(chem); cb(null, null); }
+        ], done);
+    });
 
-        done();
+    /* Before each */
+    beforeEach(function(done) {
+        server
+            .post('/api/login')
+            .send(physChemTutor)
+            .expect(200)
+            .expect(function(res) {
+                res.body.data.should.have.property("email", physChemTutor.email);
+            })
+            .end(done);
+    });
+
+    /* After each */
+    afterEach(function(done) {
+        server
+            .post('/api/logout')
+            .expect(200)
+            .end(done);
     });
 
     /* Test getTutors */
     describe('Test getTutors', function() {
-
-        it('Login', function(done) {
-            server
-                .post('/api/login')
-                .send(physChemTutor)
-                .expect(200)
-                .expect(function(res) {
-                    res.body.data.should.have.property("email", physChemTutor.email);
-                })
-                .end(done);
-        });
 
         it('Get all tutors', function(done) {
             server
@@ -134,87 +183,70 @@ describe('Tutor Controller Test', function() {
                         return tutor._id;
                     });
 
-                    tutorIds.indexOf(physChemTutor.tutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(physTutor.tutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(chemTutor.tutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(chemTutor._id.toString()).should.be.greaterThan(-1);
                 })
                 .end(done);
         });
 
-        it('Logout', function(done) {
+        it('Get tutor by name', function(done){
             server
-                .post('/api/logout')
+                .post('/api/get-tutors')
+                .send({
+                    name: physChemTutor.displayName
+                })
                 .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
+
+                    tutorIds.indexOf(physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physTutor._id.toString()).should.equal(-1);
+                    tutorIds.indexOf(chemTutor._id.toString()).should.equal(-1);
+                })
                 .end(done);
         });
 
-        //it('Get tutor by name', function(done){
-        //    request(url)
-        //        .post('get-tutors')
-        //        .send({
-        //
-        //        })
-        //        .expect(400)
-        //        .end(function (err, res) {
-        //            if (err) {
-        //                throw err;
-        //            }
-        //
-        //            res.indexOf(physChemTutor.tutor).should.be.greaterThan(-1);
-        //            res.indexOf(chemTutor.tutor).should.be.greaterThan(-1);
-        //            res.indexOf(physTutor.tutor).should.be.greaterThan(-1);
-        //
-        //            done();
-        //        });
-        //});
+        it('Get tutor by topicName', function(done){
+            server
+                .post('/api/get-tutors')
+                .send({
+                    topicName: phys.name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
 
-        // By topicName
+                    tutorIds.indexOf(physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(chemTutor._id.toString()).should.equal(-1);
+                })
+                .end(done);
+        });
 
-        // By both name and topicName
+        it('Get tutor by name and topicName', function(done){
+            server
+                .post('/api/get-tutors')
+                .send({
+                    name: physChemTutor.displayName,
+                    topicName: physTutor.topics[0].name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
+
+                    tutorIds.indexOf(physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(physTutor._id.toString()).should.equal(-1);
+                    tutorIds.indexOf(chemTutor._id.toString()).should.equal(-1);
+                })
+                .end(done);
+        });
     });
 
-    //describe('Test getTutors', function() {
-    //    it('should return error trying to save duplicate username', function(done) {
-    //        var profile = {
-    //            username: 'vgheri',
-    //            password: 'test',
-    //            firstName: 'Valerio',
-    //            lastName: 'Gheri'
-    //        };
-    //        request(url)
-    //            .post('/api/profiles')
-    //            .send(profile)
-    //            .end(function(err, res) {
-    //                if (err) {
-    //                    throw err;
-    //                }
-    //                // this is should.js syntax, very clear
-    //                res.should.have.status(400);
-    //                done();
-    //            });
-    //    });
-    //
-    //    it('should correctly update an existing account', function(done){
-    //        var body = {
-    //            firstName: 'JP',
-    //            lastName: 'Berd'
-    //        };
-    //        request(url)
-    //            .put('/api/profiles/vgheri')
-    //            .send(body)
-    //            .expect('Content-Type', /json/)
-    //            .expect(200) //Status code
-    //            .end(function(err,res) {
-    //                if (err) {
-    //                    throw err;
-    //                }
-    //                // Should.js fluent syntax applied
-    //                res.body.should.have.property('_id');
-    //                res.body.firstName.should.equal('JP');
-    //                res.body.lastName.should.equal('Berd');
-    //                res.body.creationDate.should.not.equal(null);
-    //                done();
-    //            });
-    //    });
-    //});
 });

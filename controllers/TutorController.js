@@ -17,8 +17,6 @@ var TutorController = function(app) {
                 return;
             }
 
-            //console.log(tutors);
-
             res.send({error: false, data: tutors});
         });
     }
