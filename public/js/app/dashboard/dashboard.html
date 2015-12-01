@@ -11,7 +11,7 @@
 
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
-                <button class="btn btn-primary" ng-click="studentRequests()" style="width: 100">
+                <button class="btn btn-primary" ng-click="studentRequests()" style="width: 100%">
                     Request
                 </button>
             </div>
@@ -20,7 +20,6 @@
                     Referrals 
                 </button>
             </div>
-
         </div>
 
         <div class="Row" style="margin-bottom: 100px">
@@ -48,7 +47,6 @@
                         </div> 
                     </div>
 
-                
                     <div class="Row">
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                             <span> {{tutor.rating}} </span>
@@ -64,9 +62,8 @@
 
     <div class="container">
         <div ng-if="userType == 'Tutor'" ng-repeat="req in requests">
-            <div class="panel panel-default">
-                <div class="panel-body" 
-                ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
+            <div class="panel panel-default" >
+                <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
                     <div class="Row">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
                             <span ng-bind="req.topic"></span>
@@ -78,7 +75,7 @@
                 <div ng-if="req.active" class="panel-footer">
                     <div ng-if="!req.hasResponse" class="input-group" style="margin-bottom: 20px">
                         <label class="radio-inline">
-                            <input name="{{req.id}}" type="radio" checked ng-model="req.rsponse" ng-value="True">
+                            <input name="{{req.id}}" type="radio" checked ng-model="req.response" ng-value="True">
                             Accept
                         </label>
                         <label class="radio-inline">
@@ -103,6 +100,53 @@
             </div>
         </div>
 
+    </div>
+
+
+    <div class="container">
+        <div class="Row" style="margin-bottom: 50px">
+            <div class="col-lg-6">
+                <button class="btn btn-primary" ng-click="goToSearch()" style="width: 100%">
+                    Search
+                </button>
+            </div>
+            <div class="col-lg-6">
+                <button class="btn btn-primary" ng-click="adminAnalytics()" style="width: 100%">
+                    Analytics 
+                </button>
+            </div>
+        </div>
+        <div ng-repeat="dispute in disputes">
+            <div class="panel panel-default">
+                <div class="panel-body" ng-click='panelClick(dispute)'>
+                    <div>
+                        <span>Name: {{dispute.studentName}}</span>
+                        <span>Rating: {{dispute.rating}}</span>
+                    </div>
+                    <div>
+                        <span> 
+                            {{dispute.review}}
+                        </span>
+                    </div>
+                </div>
+                <div ng-if="dispute.active" class="panel-footer" style="padding-bottom: 50px">
+                    <div>Complaint From: {{dispute.tutorName}}</div>
+                    <div>{{dispute.message}}</div>
+                    <div class="Row" style="margin-top: 50px">
+                        <div class="col-lg-6">
+                            <button class="btn btn-success" ng-click="disputeIgnore(dispute)" style="width: 100%">
+                                Ignore
+                            </button>
+                        </div>
+                        <div class="col-lg-6">
+                            <button class="btn btn-danger" ng-click="disputeRemove(dispute)" style="width: 100%">
+                                Remove Review 
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 

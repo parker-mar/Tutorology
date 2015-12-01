@@ -8,7 +8,7 @@ angular.module('MyApp.login', ['ngRoute'])
         });
 }])
 
-.controller("LoginController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope) {
+.controller("LoginController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope,$routeParams) {
 
 	//$scope.userType
 	$scope.searchTerm = "";
@@ -16,17 +16,31 @@ angular.module('MyApp.login', ['ngRoute'])
 	$scope.noResponseClass = 'background-color: #0088CC';
 	$scope.acceptResponseClass = 'background-color: #51A351';
 	$scope.denyResponseClass = 'background-color: #BD362F';
-	// TODO - Finish HTML for student and tutor
-	// sendReqest function take in req object.
+
+    $scope.panelClick = function (panel){
+        panel.active = !panel.active;
+    };
 
     $scope.searchTopic =  function (){
-
-        $http.post('/api/get-tutors', {topicName =  $scope.searchTerm}).then(
+        ///api/tutors/:tutorId/reviews/:reviewId
+        $http.get('/api/getTutors/topic/' + $scope.searchTerm.trim()).then(
             function successCallback(res){
-                $scope.tutors = res.data.data;
+                    $scope.tutors = res.data.data;
                 });
-     
+    };
 
+    $scope.disputeIgnore = function (dispute){
+        $http.put('/api/tutors/'+ $rootScope.actor._id +'/reviews/'+ dispute._id, {flagged: false}).then(
+            function successCallback(){
+                    $scope.disputes = $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
+                });
+    };
+
+    $scope.disputeRemove = function (dispute){
+        $http.delete('/api/tutors/'+ $rootScope.actor._id +'/reviews/'+ dispute._id).then(
+            function successCallback(res){
+                    $scope.disputes = $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
+                });
     };
 
     $scope.studentRequests = function () {  
@@ -37,12 +51,19 @@ angular.module('MyApp.login', ['ngRoute'])
         window.location.href = '/#/referrals';
     };
 
+    $scope.goToSearch =  function (){
+        window.location.href = '/#/search'
+    };
+
+    $scope.adminAnalytics = function (){
+        window.location.href = '/#/analytics'
+    };
+
     // send a response for request.
     $scope.sendRequest =  function (req){
-
         // Check if already has responses
         if (!req.hasResponse){
-            $http.put('/api/' + $rootScope.actor.id + '/requests/' + req.id
+            $http.put('/api/' + $rootScope.actor._id + '/requests/' + req._id
                 ,{response: req.response, message: req.resMessage}).then(                   
                 function successCallback(res){
                         req.hasResponse = true;
@@ -55,7 +76,7 @@ angular.module('MyApp.login', ['ngRoute'])
             $rootScope.actor = res.data.data;
             // If actor is student default response is to send reconmmended Tutors
             if ($rootScope.actor.userType == 'Student'){
-            	$http.get('/api/students/' + $rootScope.actor.student_id + '/getRecommendedTutors/').then(
+            	$http.get('/api/students/' + $rootScope.actor._id + '/getRecommendedTutors/').then(
             		function successCallback(res){
             			$scope.tutors = res.data.data;
             			$scope.userType = 'Student';
@@ -64,17 +85,25 @@ angular.module('MyApp.login', ['ngRoute'])
             // If actor is tutor get all requests and add attributes 
             // for display.
             } else if ($rootScope.actor.userType == 'Tutor') {
-            	$http.get('/api/'+ $rootScope.actor.tutor_id + '/getRequests/').then(
+            	$http.get('/api/tutors/'+ $rootScope.actor._id + '/requests').then(
             		function successCallback(res){
             			$scope.requests = res.data.data;
-            			for (i = 0; i < scope.requests.length; i++){
-            				scope.requests[i].active = false;
-            				scope.requests[i].response = false;
-            				scope.requests[i].resMessage = "";
-            			}
 
+                        $scope.requests.forEach(function(req){
+                            req.active = false;
+                            req.response = false;
+                            req.resMessage = "";
+                        });
             			$scope.userType = 'Tutor';
             		});
+            } else if ($rootScope.actor.userType == 'Tutor'){
+                $http.get('/api/admin/get-disputes/').then(
+                    function successCallback(res){
+                        $scope.disputes = res.data.data;
+                        $scope.disputes.forEach(function(dispute){
+                            dispute.active = false;
+                        }
+                    });
             }
         }
     }
