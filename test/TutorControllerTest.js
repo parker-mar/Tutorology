@@ -1,129 +1,78 @@
 /**
  * Created by parkeraldricmar on 15-11-29.
- * Based on https://thewayofcode.wordpress.com/2013/04/21/how-to-build-and-test-rest-api-with-nodejs-express-mocha/
  */
 
 var should = require('should');
-var assert = require('assert');
-var mongoose = require('mongoose');
-var request = require('supertest');
-var server = request.agent('http://127.0.0.1:3000');
-var app = require('../server.js');
-
-var Users = app.models.Users;
-var Tutors = app.models.Tutors;
-var Topics = app.models.Topics;
-var Requests = app.models.Requests;
-var Reviews = app.models.Reviews;
-var Profiles = app.models.Profiles;
+var async = require("async");
+var server = require('supertest').agent('http://127.0.0.1:3000');
+var test = require('./test.js');
 
 describe('Tutor Controller Test', function() {
 
-    /* Shared Variables */
-    var physChemTutor = {
-        email: 'physchem@physchem.com',
-        pass: '1',
-        confirmPass: '1',
-        userType: 'Tutor',
-        charge: 0.00
-    };
-
-    var physTutor = {
-        email: 'phys@phys.com',
-        pass: '1',
-        confirmPass: '1',
-        userType: 'Tutor',
-        charge: 0.00
-    };
-
-    var chemTutor = {
-        email: 'chem@chem.com',
-        pass: '1',
-        confirmPass: '1',
-        userType: 'Tutor',
-        charge: 0.00
-    };
-
-    /* Test helper functions */
-    function createTutor(tutorArg) {
-        tutorArg.password = tutorArg.pass;
-        Tutors.create(tutorArg, function(err, tutor) {
-            if(err){
-                should.fail(err.message);
-            }
-            delete tutor._doc.password;
-            delete tutor._doc.__v;
-            tutorArg.tutor = tutor;
-            console.log(tutor);
-
-            if (tutor) {
-                console.log("yes");
-            } else {
-                console.log("no");
-            }
-        });
-
-        Tutors.find({}).exec(function (err, tutors) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-                return;
-            }
-
-            if (tutors.length > 0) {
-                console.log("yes");
-            } else {
-                console.log("no");
-            }
-
-            console.log(tutors);
-        });
-    }
-
-    function deleteTutor(tutorArg) {
-
-        // For some reason, can't remove from Tutors model.
-        Users.remove({_id: tutorArg.tutor._id}, function (err) {
-            if (err) {
-                console.log(err.message);
-            } else {
-                console.log("tutor " + tutorArg.tutor._id + " Removed Successfully");
-            }
-        });
-    }
-
     /* Before all */
     before(function(done) {
-        createTutor(physChemTutor);
-        createTutor(physTutor);
-        createTutor(chemTutor);
+        async.series([
+            function(cb) { test.createTutor(test.physChemTutor); cb(null, null); },
+            function(cb) { test.createTutor(test.physTutor); cb(null, null); },
+            function(cb) { test.createTutor(test.chemTutor); cb(null, null); },
 
-        done();
+            function(cb) { test.createTopic(test.phys); cb(null, null); },
+            function(cb) { test.createTopic(test.chem); cb(null, null); },
+
+            function(cb) { test.addTopic(test.physChemTutor, test.phys); cb(null, null); },
+            function(cb) { test.addTopic(test.physChemTutor, test.chem); cb(null, null); },
+            function(cb) { test.addTopic(test.physTutor, test.phys); cb(null, null); },
+            function(cb) { test.addTopic(test.chemTutor, test.chem); cb(null, null); },
+
+            function(cb) { test.createStudent(test.physChemStudent); cb(null, null); },
+
+            function(cb) { test.createRequest(test.physRequest); cb(null, null); },
+            function(cb) { test.createRequest(test.chemRequest); cb(null, null); },
+
+            function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.physRequest); cb(null, null); },
+            function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.chemRequest); cb(null, null); },
+        ], done);
     });
 
     /* After all */
     after(function(done) {
+        async.series([
+            function(cb) { test.deleteTutor(test.physChemTutor); cb(null, null); },
+            function(cb) { test.deleteTutor(test.physTutor); cb(null, null); },
+            function(cb) { test.deleteTutor(test.chemTutor); cb(null, null); },
 
-        deleteTutor(physChemTutor);
-        deleteTutor(physTutor);
-        deleteTutor(chemTutor);
+            function(cb) { test.deleteTopic(test.phys); cb(null, null); },
+            function(cb) { test.deleteTopic(test.chem); cb(null, null); },
 
-        done();
+            function(cb) { test.deleteStudent(test.physChemStudent); cb(null, null); },
+
+            function(cb) { test.deleteRequest(test.physRequest); cb(null, null); },
+            function(cb) { test.deleteRequest(test.chemRequest); cb(null, null); }
+        ], done);
+    });
+
+    /* Before each */
+    beforeEach(function(done) {
+        server
+            .post('/api/login')
+            .send(test.physChemTutor)
+            .expect(200)
+            .expect(function(res) {
+                res.body.data.should.have.property("email", test.physChemTutor.email);
+            })
+            .end(done);
+    });
+
+    /* After each */
+    afterEach(function(done) {
+        server
+            .post('/api/logout')
+            .expect(200)
+            .end(done);
     });
 
     /* Test getTutors */
     describe('Test getTutors', function() {
-
-        it('Login', function(done) {
-            server
-                .post('/api/login')
-                .send(physChemTutor)
-                .expect(200)
-                .expect(function(res) {
-                    res.body.data.should.have.property("email", physChemTutor.email);
-                })
-                .end(done);
-        });
 
         it('Get all tutors', function(done) {
             server
@@ -134,87 +83,235 @@ describe('Tutor Controller Test', function() {
                         return tutor._id;
                     });
 
-                    tutorIds.indexOf(physChemTutor.tutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(physTutor.tutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(chemTutor.tutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.physTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.chemTutor._id.toString()).should.be.greaterThan(-1);
                 })
                 .end(done);
         });
 
-        it('Logout', function(done) {
+        it('Get tutor by name', function(done){
             server
-                .post('/api/logout')
+                .post('/api/get-tutors')
+                .send({
+                    name: test.physChemTutor.displayName
+                })
                 .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
+
+                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.physTutor._id.toString()).should.equal(-1);
+                    tutorIds.indexOf(test.chemTutor._id.toString()).should.equal(-1);
+                })
                 .end(done);
         });
 
-        //it('Get tutor by name', function(done){
-        //    request(url)
-        //        .post('get-tutors')
-        //        .send({
-        //
-        //        })
-        //        .expect(400)
-        //        .end(function (err, res) {
-        //            if (err) {
-        //                throw err;
-        //            }
-        //
-        //            res.indexOf(physChemTutor.tutor).should.be.greaterThan(-1);
-        //            res.indexOf(chemTutor.tutor).should.be.greaterThan(-1);
-        //            res.indexOf(physTutor.tutor).should.be.greaterThan(-1);
-        //
-        //            done();
-        //        });
-        //});
+        it('Get tutor by topicName', function(done){
+            server
+                .post('/api/get-tutors')
+                .send({
+                    topicName: test.phys.name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
 
-        // By topicName
+                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.physTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.chemTutor._id.toString()).should.equal(-1);
+                })
+                .end(done);
+        });
 
-        // By both name and topicName
+        it('Get tutor by name and topicName', function(done){
+            server
+                .post('/api/get-tutors')
+                .send({
+                    name: test.physChemTutor.displayName,
+                    topicName: test.physTutor.topics[0].name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var tutorIds = res.body.data.map(function(tutor) {
+                        return tutor._id;
+                    });
+
+                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
+                    tutorIds.indexOf(test.physTutor._id.toString()).should.equal(-1);
+                    tutorIds.indexOf(test.chemTutor._id.toString()).should.equal(-1);
+                })
+                .end(done);
+        });
     });
 
-    //describe('Test getTutors', function() {
-    //    it('should return error trying to save duplicate username', function(done) {
-    //        var profile = {
-    //            username: 'vgheri',
-    //            password: 'test',
-    //            firstName: 'Valerio',
-    //            lastName: 'Gheri'
-    //        };
-    //        request(url)
-    //            .post('/api/profiles')
-    //            .send(profile)
-    //            .end(function(err, res) {
-    //                if (err) {
-    //                    throw err;
-    //                }
-    //                // this is should.js syntax, very clear
-    //                res.should.have.status(400);
-    //                done();
-    //            });
-    //    });
-    //
-    //    it('should correctly update an existing account', function(done){
-    //        var body = {
-    //            firstName: 'JP',
-    //            lastName: 'Berd'
-    //        };
-    //        request(url)
-    //            .put('/api/profiles/vgheri')
-    //            .send(body)
-    //            .expect('Content-Type', /json/)
-    //            .expect(200) //Status code
-    //            .end(function(err,res) {
-    //                if (err) {
-    //                    throw err;
-    //                }
-    //                // Should.js fluent syntax applied
-    //                res.body.should.have.property('_id');
-    //                res.body.firstName.should.equal('JP');
-    //                res.body.lastName.should.equal('Berd');
-    //                res.body.creationDate.should.not.equal(null);
-    //                done();
-    //            });
-    //    });
-    //});
+    /* Test addTopic */
+    describe('Test addTopic', function() {
+
+        it('Add a topic', function(done) {
+            server
+                .post('/api/tutors/' + test.physChemTutor._id + '/topics')
+                .send({
+                    topicName: test.topicToAdd.name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var topic = res.body.data;
+
+                    topic.name.should.equal(test.topicToAdd.name);
+
+                    test.topicToAdd._id = topic._id;
+                })
+                .end(done);
+        });
+
+        it("Check that the topic is added to list of tutor's topics", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/topics')
+                .expect(200)
+                .expect(function(res) {
+                    var topicNames = res.body.data.map(function(topic) {
+                        return topic.name;
+                    });
+
+                    topicNames.indexOf(test.phys.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(test.chem.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(test.topicToAdd.name).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+
+        it('Remove the topic', function(done) {
+            server
+                .delete('/api/tutors/' + test.physChemTutor._id + '/topics/' + test.topicToAdd._id)
+                .expect(200)
+                .expect(function(res) {
+                    var topicId = res.body.data;
+
+                    topicId.should.equal(test.topicToAdd._id);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test getTopics */
+    describe('Test getTopics', function() {
+
+        it('Get all topics', function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/topics')
+                .expect(200)
+                .expect(function(res) {
+                    var topicNames = res.body.data.map(function(topic) {
+                        return topic.name;
+                    });
+
+                    topicNames.indexOf(test.phys.name).should.be.greaterThan(-1);
+                    topicNames.indexOf(test.chem.name).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test removeTopic */
+    describe('Test removeTopic', function() {
+
+        it('Remove the topic', function(done) {
+            server
+                .delete('/api/tutors/' + test.physChemTutor._id + '/topics/' + test.phys._id)
+                .expect(200)
+                .expect(function(res) {
+                    var topicId = res.body.data;
+
+                    topicId.should.equal(test.phys._id.toString());
+                })
+                .end(done);
+        });
+
+        it('Read the topic', function(done) {
+            server
+                .post('/api/tutors/' + test.physChemTutor._id + '/topics')
+                .send({
+                    topicName: test.phys.name
+                })
+                .expect(200)
+                .expect(function (res) {
+                    var topic = res.body.data;
+
+                    topic.name.should.equal(test.phys.name);
+
+                    test.phys._id = topic._id;
+                })
+                .end(done);
+        });
+    });
+
+    /* Test getRequests */
+    describe('Test getRequests', function() {
+
+        it('Get all requests', function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/requests')
+                .expect(200)
+                .expect(function(res) {
+                    var requestIds = res.body.data.map(function(request) {
+                        return request._id;
+                    });
+
+                    requestIds.indexOf(test.physRequest._id.toString()).should.be.greaterThan(-1);
+                    requestIds.indexOf(test.chemRequest._id.toString()).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test respondToRequest */
+    describe('Test respondToRequest', function() {
+
+        it('Accept a request and give a response', function(done) {
+            server
+                .put('/api/tutors/' + test.physChemTutor._id + '/requests/' + test.physRequest._id)
+                .send({
+                    accepted: true,
+                    response: "Certainly! See you at BA3200 @ 5PM tomorrow."
+                })
+                .expect(200)
+                .expect(function(res) {
+                    var request = res.body.data;
+
+                    request.hasResponse.should.equal(true);
+                    request.accepted.should.equal(true);
+                    request.response.should.equal("Certainly! See you at BA3200 @ 5PM tomorrow.");
+
+                    test.physRequest.hasResponse = true;
+                    test.physRequest.accepted = true;
+                    test.physRequest.response = "Certainly! See you at BA3200 @ 5PM tomorrow.";
+                })
+                .end(done);
+        });
+
+        it('Decline a request and give no response', function(done) {
+            server
+                .put('/api/tutors/' + test.physChemTutor._id + '/requests/' + test.chemRequest._id)
+                .send({
+                    accepted: false
+                })
+                .expect(200)
+                .expect(function(res) {
+                    var request = res.body.data;
+
+                    request.hasResponse.should.equal(true);
+                    request.accepted.should.equal(false);
+                    should.equal(request.response, undefined);
+
+                    test.physRequest.hasResponse = true;
+                    test.physRequest.accepted = false;
+                })
+                .end(done);
+        });
+    });
 });
