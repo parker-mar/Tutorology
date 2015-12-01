@@ -10,7 +10,7 @@ module.exports = function(app){
         topicId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'},
         created_at: { type: Date, required: true, default: Date.now },
         message: String,
-        hasResponse: Boolean,
+        hasResponse: { type: Boolean, default: false },
         accepted: Boolean,
         response: String
     });

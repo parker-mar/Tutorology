@@ -166,18 +166,17 @@ var TutorController = function(app) {
 //  @paramarg {String} tutorId      The ID of the tutor.
 //  @returns {Response}             All the requests made to the tutor with ID tutorId.
     this.getRequests = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //
-        //Tutors.findById(tutorId, Tutors.defaultFilter).populate('requests').exec(function (err, tutor) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    res.send({error: false, data: tutor.requests});
-        //});
+        var tutorId = req.params.tutorId;
+
+        Tutors.findById(tutorId, Tutors.defaultFilter).populate('requests').exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            res.send({error: false, data: tutor.requests});
+        });
     };
 
 //  Updates the request to the tutor with a response
@@ -187,41 +186,40 @@ var TutorController = function(app) {
 //  @bodyarg {String} response       The response message (optional).
 //  @returns {Response}              The result of of the update operation.
     this.respondToRequest = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //var requestId = req.params.requestId;
-        //var accepted = req.body.accepted;
-        //var response = req.body.response === "undefined" ? "" : req.body.response;
-        //
-        //if (typeof accepted === "undefined") {
-        //    var errMsg = "Error: accepted unspecified.";
-        //    console.log(errMsg);
-        //    res.status(400).send({error: true, message: errMsg});
-        //    return;
-        //}
-        //
-        //Requests.findById(requestId).exec(function (err, request) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    request.hasResponse = true;
-        //    request.accepted = accepted;
-        //    request.response = response;
-        //
-        //    request.save(function (err) {
-        //        if (err) {
-        //            console.log(err.message);
-        //            res.status(500).send({error: true, message: "An internal server error occurred."});
-        //            return;
-        //        }
-        //
-        //        activityLogger.logActivity(requestId,"update request",request);
-        //        res.send({error: false, data: requestId});
-        //    });
-        //});
+        var tutorId = req.params.tutorId;
+        var requestId = req.params.requestId;
+        var accepted = req.body.accepted;
+        var response = req.body.response === "undefined" ? "" : req.body.response;
+
+        if (typeof accepted === "undefined") {
+            var errMsg = "Error: accepted unspecified.";
+            console.log(errMsg);
+            res.status(400).send({error: true, message: errMsg});
+            return;
+        }
+
+        Requests.findById(requestId).exec(function (err, request) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            request.hasResponse = true;
+            request.accepted = accepted;
+            request.response = response;
+
+            request.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                activityLogger.logActivity(requestId,"update request",request);
+                res.send({error: false, data: request});
+            });
+        });
     };
 
 //  Gets all reviews for the tutor with ID tutorId.
@@ -277,7 +275,7 @@ var TutorController = function(app) {
         //        }
         //
         //        activityLogger.logActivity(reviewId,"update review",review);
-        //        res.send({error: false, data: reviewId});
+        //        res.send({error: false, data: review});
         //    });
         //});
     };
