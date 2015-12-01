@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html ng-app="MyApp">
-<head>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <script src="js/jquery.min.js"></script>
-
-</head>
-<body>
+<div> test </div>
+<div>
 
     <div ng-if="userType == 'Student'" class="container">
-
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="studentRequests()" style="width: 100%">
@@ -58,9 +51,10 @@
                 </div>
             </div>
         </div>
-    </div>
+        </div>
 
-    <div class="container">
+    <div ng-if="userType == 'Tutor'">
+        <center><h4> Click to read requests</h4></center>
         <div ng-if="userType == 'Tutor'" ng-repeat="req in requests">
             <div class="panel panel-default" >
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
@@ -75,11 +69,11 @@
                 <div ng-if="req.active" class="panel-footer">
                     <div ng-if="!req.hasResponse" class="input-group" style="margin-bottom: 20px">
                         <label class="radio-inline">
-                            <input name="{{req.id}}" type="radio" checked ng-model="req.response" ng-value="True">
+                            <input name="{{req.studentName}}" type="radio" checked ng-model="req.response" ng-value="true">
                             Accept
                         </label>
                         <label class="radio-inline">
-                            <input name="{{req.id}}" type="radio" ng-model="req.response" ng-value="False">
+                            <input name="{{req.studentName}}" type="radio" ng-model="req.response" ng-value="false">
                             Deny
                         </label>
                         <button class="btn btn-primary btn-lg" ng-click="sendRequest(req)" type="button">
@@ -102,8 +96,7 @@
 
     </div>
 
-
-    <div class="container">
+    <div ng-if="userType == 'Admin'">
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="goToSearch()" style="width: 100%">
@@ -117,8 +110,8 @@
             </div>
         </div>
         <div ng-repeat="dispute in disputes">
-            <div class="panel panel-default">
-                <div class="panel-body" ng-click='panelClick(dispute)'>
+            <div class="panel panel-default bg-warning">
+                <div class="panel-body bg-info" ng-click='panelClick(dispute)'>
                     <div>
                         <span>Name: {{dispute.studentName}}</span>
                         <span>Rating: {{dispute.rating}}</span>
@@ -148,14 +141,4 @@
             </div>
         </div>
     </div>
-</body>
-
-
-
-
-
-
-
-
-
-
+</div>

@@ -1,21 +1,23 @@
-angular.module('MyApp.login', ['ngRoute'])
+angular.module('MyApp.dashboard', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-        .when('/', {
-            templateUrl: 'js/app/dash/dash.html',
+        .when('/dash', {
+            templateUrl: 'js/app/dashboard/dashboard.html',
             controller: 'DashController'
         });
 }])
+.controller("DashController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope,$routeParams) {
 
-.controller("LoginController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope,$routeParams) {
+    // To Do --> correcting attibutes from data 
+    //       --> LIVE testing
+    //       --> add link to tutor profile form student dash. 
 
-	//$scope.userType
 	$scope.searchTerm = "";
 
-	$scope.noResponseClass = 'background-color: #0088CC';
-	$scope.acceptResponseClass = 'background-color: #51A351';
-	$scope.denyResponseClass = 'background-color: #BD362F';
+	$scope.noResponseClass = 'bg-info';
+	$scope.acceptResponseClass = 'bg-success';
+	$scope.denyResponseClass = 'bg-danger'
 
     $scope.panelClick = function (panel){
         panel.active = !panel.active;
@@ -32,14 +34,14 @@ angular.module('MyApp.login', ['ngRoute'])
     $scope.disputeIgnore = function (dispute){
         $http.put('/api/tutors/'+ $rootScope.actor._id +'/reviews/'+ dispute._id, {flagged: false}).then(
             function successCallback(){
-                    $scope.disputes = $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
+                    $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
                 });
     };
 
     $scope.disputeRemove = function (dispute){
         $http.delete('/api/tutors/'+ $rootScope.actor._id +'/reviews/'+ dispute._id).then(
             function successCallback(res){
-                    $scope.disputes = $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
+                    $scope.disputes.splice($scope.disputes.indexOf(dispute), 1);
                 });
     };
 
@@ -61,6 +63,8 @@ angular.module('MyApp.login', ['ngRoute'])
 
     // send a response for request.
     $scope.sendRequest =  function (req){
+        req.hasResponse = true;
+        req.accepted = true;
         // Check if already has responses
         if (!req.hasResponse){
             $http.put('/api/' + $rootScope.actor._id + '/requests/' + req._id
@@ -70,6 +74,12 @@ angular.module('MyApp.login', ['ngRoute'])
                     });
         }
     };
+ 
+
+    // TEST DATA
+    //$scope.userType = 'Tutor';
+    //$scope.requests = [{studentName: "Arthur", hasResponse: true, rating: 4, review: "THIS GUY SUCKS", message: "This guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad review", active: false}, {n: 2, active: false},{n: 3, active: false},{n: 4, active: false}];
+
 
 	$http.get('/api/actor').then(
         function successCallback(res){
@@ -102,11 +112,10 @@ angular.module('MyApp.login', ['ngRoute'])
                         $scope.disputes = res.data.data;
                         $scope.disputes.forEach(function(dispute){
                             dispute.active = false;
-                        }
+                        });
                     });
             }
-        }
-    }
+        });
 
 
 }]);
