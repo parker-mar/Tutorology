@@ -84,7 +84,7 @@ module.exports = function(app) {
         securityGate.checkIfUserIsSignedIn, tutorController.getReviews);
 
     app.put(root+'tutors/:tutorId/reviews/:reviewId',
-        securityGate.checkIfUserIsTutor, tutorController.flagReview);
+        securityGate.checkIfUserIsTutorOrAdmin, tutorController.setReviewFlag);
 
     app.delete(root+'tutors/:tutorId/reviews/:reviewId',
         securityGate.checkIfUserIsAdmin, tutorController.removeReview);

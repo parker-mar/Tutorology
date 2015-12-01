@@ -12,42 +12,54 @@ describe('Tutor Controller Test', function() {
     /* Before all */
     before(function(done) {
         async.series([
+            function(cb) { test.createTutor(test.admin); cb(null, null); },
+
             function(cb) { test.createTutor(test.physChemTutor); cb(null, null); },
             function(cb) { test.createTutor(test.physTutor); cb(null, null); },
             function(cb) { test.createTutor(test.chemTutor); cb(null, null); },
 
+            function(cb) { test.createStudent(test.physChemStudent); cb(null, null); },
+            function(cb) { test.createStudent(test.physChemStudent2); cb(null, null); },
+
             function(cb) { test.createTopic(test.phys); cb(null, null); },
             function(cb) { test.createTopic(test.chem); cb(null, null); },
-
             function(cb) { test.addTopic(test.physChemTutor, test.phys); cb(null, null); },
             function(cb) { test.addTopic(test.physChemTutor, test.chem); cb(null, null); },
             function(cb) { test.addTopic(test.physTutor, test.phys); cb(null, null); },
             function(cb) { test.addTopic(test.chemTutor, test.chem); cb(null, null); },
 
-            function(cb) { test.createStudent(test.physChemStudent); cb(null, null); },
-
             function(cb) { test.createRequest(test.physRequest); cb(null, null); },
             function(cb) { test.createRequest(test.chemRequest); cb(null, null); },
-
             function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.physRequest); cb(null, null); },
             function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.chemRequest); cb(null, null); },
+
+            function(cb) { test.createReview(test.physChemTutorReviewGood); cb(null, null); },
+            function(cb) { test.createReview(test.physChemTutorReviewBad); cb(null, null); },
+            function(cb) { test.addReview(test.physChemStudent, test.physChemTutor, test.physChemTutorReviewGood); cb(null, null); },
+            function(cb) { test.addReview(test.physChemStudent2, test.physChemTutor, test.physChemTutorReviewBad); cb(null, null); }
         ], done);
     });
 
     /* After all */
     after(function(done) {
         async.series([
+            function(cb) { test.deleteTutor(test.admin); cb(null, null); },
+
             function(cb) { test.deleteTutor(test.physChemTutor); cb(null, null); },
             function(cb) { test.deleteTutor(test.physTutor); cb(null, null); },
             function(cb) { test.deleteTutor(test.chemTutor); cb(null, null); },
 
+            function(cb) { test.deleteStudent(test.physChemStudent); cb(null, null); },
+            function(cb) { test.deleteStudent(test.physChemStudent2); cb(null, null); },
+
             function(cb) { test.deleteTopic(test.phys); cb(null, null); },
             function(cb) { test.deleteTopic(test.chem); cb(null, null); },
 
-            function(cb) { test.deleteStudent(test.physChemStudent); cb(null, null); },
-
             function(cb) { test.deleteRequest(test.physRequest); cb(null, null); },
-            function(cb) { test.deleteRequest(test.chemRequest); cb(null, null); }
+            function(cb) { test.deleteRequest(test.chemRequest); cb(null, null); },
+
+            function(cb) { test.deleteReview(test.physChemTutorReviewGood); cb(null, null); },
+            function(cb) { test.deleteReview(test.physChemTutorReviewBad); cb(null, null); }
         ], done);
     });
 
@@ -58,7 +70,7 @@ describe('Tutor Controller Test', function() {
             .send(test.physChemTutor)
             .expect(200)
             .expect(function(res) {
-                res.body.data.should.have.property("email", test.physChemTutor.email);
+                res.body.data._id.should.equal(test.physChemTutor._id.toString());
             })
             .end(done);
     });
@@ -169,7 +181,7 @@ describe('Tutor Controller Test', function() {
                 .end(done);
         });
 
-        it("Check that the topic is added to list of tutor's topics", function(done) {
+        it("Check that the topic is added to the tutor's list of topics", function(done) {
             server
                 .get('/api/tutors/' + test.physChemTutor._id + '/topics')
                 .expect(200)
@@ -178,8 +190,6 @@ describe('Tutor Controller Test', function() {
                         return topic.name;
                     });
 
-                    topicNames.indexOf(test.phys.name).should.be.greaterThan(-1);
-                    topicNames.indexOf(test.chem.name).should.be.greaterThan(-1);
                     topicNames.indexOf(test.topicToAdd.name).should.be.greaterThan(-1);
                 })
                 .end(done);
@@ -192,7 +202,7 @@ describe('Tutor Controller Test', function() {
                 .expect(function(res) {
                     var topicId = res.body.data;
 
-                    topicId.should.equal(test.topicToAdd._id);
+                    topicId.should.equal(test.topicToAdd._id.toString());
                 })
                 .end(done);
         });
@@ -201,17 +211,17 @@ describe('Tutor Controller Test', function() {
     /* Test getTopics */
     describe('Test getTopics', function() {
 
-        it('Get all topics', function(done) {
+        it('Get all topics for the tutor', function(done) {
             server
                 .get('/api/tutors/' + test.physChemTutor._id + '/topics')
                 .expect(200)
                 .expect(function(res) {
-                    var topicNames = res.body.data.map(function(topic) {
-                        return topic.name;
+                    var topicIds = res.body.data.map(function(topic) {
+                        return topic._id;
                     });
 
-                    topicNames.indexOf(test.phys.name).should.be.greaterThan(-1);
-                    topicNames.indexOf(test.chem.name).should.be.greaterThan(-1);
+                    topicIds.indexOf(test.phys._id.toString()).should.be.greaterThan(-1);
+                    topicIds.indexOf(test.chem._id.toString()).should.be.greaterThan(-1);
                 })
                 .end(done);
         });
@@ -232,7 +242,21 @@ describe('Tutor Controller Test', function() {
                 .end(done);
         });
 
-        it('Read the topic', function(done) {
+        it("Check that the topic is removed from the tutor's list of topics", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/topics')
+                .expect(200)
+                .expect(function(res) {
+                    var topicNames = res.body.data.map(function(topic) {
+                        return topic.name;
+                    });
+
+                    topicNames.indexOf(test.phys.name).should.equal(-1);
+                })
+                .end(done);
+        });
+
+        it('Readd the topic', function(done) {
             server
                 .post('/api/tutors/' + test.physChemTutor._id + '/topics')
                 .send({
@@ -253,7 +277,7 @@ describe('Tutor Controller Test', function() {
     /* Test getRequests */
     describe('Test getRequests', function() {
 
-        it('Get all requests', function(done) {
+        it('Get all requests for the tutor', function(done) {
             server
                 .get('/api/tutors/' + test.physChemTutor._id + '/requests')
                 .expect(200)
@@ -272,12 +296,14 @@ describe('Tutor Controller Test', function() {
     /* Test respondToRequest */
     describe('Test respondToRequest', function() {
 
+        var response = "Certainly! See you at BA3200 @ 5PM tomorrow.";
+
         it('Accept a request and give a response', function(done) {
             server
                 .put('/api/tutors/' + test.physChemTutor._id + '/requests/' + test.physRequest._id)
                 .send({
                     accepted: true,
-                    response: "Certainly! See you at BA3200 @ 5PM tomorrow."
+                    response: response
                 })
                 .expect(200)
                 .expect(function(res) {
@@ -285,11 +311,29 @@ describe('Tutor Controller Test', function() {
 
                     request.hasResponse.should.equal(true);
                     request.accepted.should.equal(true);
-                    request.response.should.equal("Certainly! See you at BA3200 @ 5PM tomorrow.");
+                    request.response.should.equal(response);
 
                     test.physRequest.hasResponse = true;
                     test.physRequest.accepted = true;
-                    test.physRequest.response = "Certainly! See you at BA3200 @ 5PM tomorrow.";
+                    test.physRequest.response = response;
+                })
+                .end(done);
+        });
+
+        it("Check that the request in the tutor's list of requests is updated accordingly", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/requests')
+                .expect(200)
+                .expect(function(res) {
+                    var requests = res.body.data;
+                    var requestIds = requests.map(function(request) {
+                        return request._id;
+                    });
+
+                    var request = requests[requestIds.indexOf(test.physRequest._id.toString())];
+                    request.hasResponse.should.equal(true);
+                    request.accepted.should.equal(true);
+                    request.response.should.equal(response);
                 })
                 .end(done);
         });
@@ -310,6 +354,279 @@ describe('Tutor Controller Test', function() {
 
                     test.physRequest.hasResponse = true;
                     test.physRequest.accepted = false;
+                })
+                .end(done);
+        });
+
+        it("Check that the request in the tutor's list of requests is updated accordingly", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/requests')
+                .expect(200)
+                .expect(function(res) {
+                    var requests = res.body.data;
+                    var requestIds = requests.map(function(request) {
+                        return request._id;
+                    });
+
+                    var request = requests[requestIds.indexOf(test.chemRequest._id.toString())];
+                    request.hasResponse.should.equal(true);
+                    request.accepted.should.equal(false);
+                    should.equal(request.response, undefined);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test getReviews */
+    describe('Test getReviews', function() {
+
+        it('Get all reviews for the tutor', function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviewIds = res.body.data.map(function(review) {
+                        return review._id;
+                    });
+
+                    reviewIds.indexOf(test.physChemTutorReviewGood._id.toString()).should.be.greaterThan(-1);
+                    reviewIds.indexOf(test.physChemTutorReviewBad._id.toString()).should.be.greaterThan(-1);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test setReviewFlag */
+    describe('Test setReviewFlag', function() {
+
+        var reason = "Review is unfair!";
+
+        it('Flag a review as a non-admin tutor and give a reason', function(done) {
+            server
+                .put('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewBad._id)
+                .send({
+                    flagged: true,
+                    reason: reason
+                })
+                .expect(200)
+                .expect(function(res) {
+                    var review = res.body.data;
+
+                    review.flagged.should.equal(true);
+                    review.reason.should.equal(reason);
+
+                    test.physChemTutorReviewBad.flagged = true;
+                    test.physChemTutorReviewBad.reason = reason;
+                })
+                .end(done);
+        });
+
+        it("Check that the review in the tutor's list of reviews is updated accordingly", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviews = res.body.data;
+                    var reviewIds = reviews.map(function(review) {
+                        return review._id;
+                    });
+
+                    var review = reviews[reviewIds.indexOf(test.physChemTutorReviewBad._id.toString())];
+                    review.flagged.should.equal(true);
+                    review.reason.should.equal(reason);
+                })
+                .end(done);
+        });
+
+        it("Unflag a review as an admin and don't update the reason", function(done) {
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.admin)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.admin._id.toString());
+                });
+
+            server
+                .put('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewBad._id)
+                .send({
+                    flagged: false
+                })
+                .expect(200)
+                .expect(function(res) {
+                    var review = res.body.data;
+
+                    review.flagged.should.equal(false);
+                    review.reason.should.equal(reason);
+
+                    test.physChemTutorReviewBad.flagged = false;
+                });
+
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.physChemTutor)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.physChemTutor._id.toString());
+                })
+                .end(done);
+        });
+
+        it("Check that the review in the tutor's list of reviews is updated accordingly", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviews = res.body.data;
+                    var reviewIds = reviews.map(function(review) {
+                        return review._id;
+                    });
+
+                    var review = reviews[reviewIds.indexOf(test.physChemTutorReviewBad._id.toString())];
+                    review.flagged.should.equal(false);
+                    review.reason.should.equal(reason);
+                })
+                .end(done);
+        });
+
+        it('Attempt to flag a review as a non-admin, non-tutor', function(done) {
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.physChemStudent)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.physChemStudent._id.toString());
+                });
+
+            server
+                .put('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewBad._id)
+                .send({
+                    flagged: true
+                })
+                .expect(401)
+                .expect(function(res) {
+                    res.body.data.message.should.equal("User missing appropriate tutor or admin privileges.");
+                });
+
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.physChemTutor)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.physChemTutor._id.toString);
+                })
+                .end(done);
+        });
+
+        it("Check that the review in the tutor's list of reviews remains accordingly", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviews = res.body.data;
+                    var reviewIds = reviews.map(function(review) {
+                        return review._id;
+                    });
+
+                    var review = reviews[reviewIds.indexOf(test.physChemTutorReviewBad._id.toString)];
+                    review.flagged.should.equal(false);
+                    review.reason.should.equal(reason);
+                })
+                .end(done);
+        });
+    });
+
+    /* Test removeReview */
+    describe('Test removeReview', function() {
+
+        it('Remove a review as an admin', function(done) {
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.admin)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.admin._id.toString());
+                });
+
+            server
+                .delete('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewBad._id)
+                .expect(200)
+                .expect(function(res) {
+                    var reviewId = res.body.data;
+
+                    reviewId.should.equal(test.physChemTutorReviewBad._id.toString());
+                });
+
+            server
+                .post('/api/logout')
+                .expect(200);
+
+            server
+                .post('/api/login')
+                .send(test.physChemTutor)
+                .expect(200)
+                .expect(function(res) {
+                    res.body.data._id.should.equal(test.physChemTutor._id.toString());
+                })
+                .end(done);
+        });
+
+        it("Check that the review is removed from the tutor's list of reviews", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviewMessages = res.body.data.map(function(review) {
+                        return review.message;
+                    });
+
+                    // Not unique, but close and safe enough.
+                    reviewMessages.indexOf(test.physChemTutorReviewBad.message).should.equal(-1);
+                })
+                .end(done);
+        });
+
+        it('Attempt to remove a review as a non-admin', function(done) {
+            server
+                .delete('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewGood._id)
+                .expect(401)
+                .expect(function(res) {
+                    res.body.data.message.should.equal("User does not have required privileges.");
+                })
+                .end(done);
+        });
+
+        it("Check that the review remains in the tutor's list of reviews", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviewMessages = res.body.data.map(function(review) {
+                        return review.message;
+                    });
+
+                    // Not unique, but close and safe enough.
+                    reviewMessages.indexOf(test.physChemTutorReviewGood.message).should.be.greaterThan(-1);
                 })
                 .end(done);
         });

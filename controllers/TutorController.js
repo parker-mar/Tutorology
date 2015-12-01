@@ -226,58 +226,59 @@ var TutorController = function(app) {
 //  @paramarg {String} tutorId      The ID of the tutor.
 //  @returns {Response}             All the reviews for the tutor with ID tutorId.
     this.getReviews = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //
-        //Tutors.findById(tutorId, Tutors.defaultFilter).populate('reviews').exec(function (err, tutor) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    res.send({error: false, data: tutor.reviews});
-        //});
+        var tutorId = req.params.tutorId;
+
+        Tutors.findById(tutorId, Tutors.defaultFilter).populate('reviews').exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            res.send({error: false, data: tutor.reviews});
+        });
     };
 
-//  Flags the review
+//  Sets the review flag
 //  @paramarg {String} tutorId       The ID of the tutor flagging the review.
 //  @paramarg {String} reviewId      The ID of the review.
+//  @bodyarg {Boolean} flagged       The flag.
 //  @bodyarg {String} reason         The reason for flagging (optional).
 //  @returns {Response}              The result of of the update operation.
-    this.flagReview = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //var reviewId = req.params.reviewId;
-        //var reason = req.body.reason === "undefined" ? "" : req.body.reason;
-        //
-        //if (typeof accepted === "undefined") {
-        //    var errMsg = "Error: accepted unspecified.";
-        //    console.log(errMsg);
-        //    res.status(400).send({error: true, message: errMsg});
-        //    return;
-        //}
-        //
-        //Reviews.findById(reviewId).exec(function (err, review) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    review.reason = reason;
-        //
-        //    review.save(function (err) {
-        //        if (err) {
-        //            console.log(err.message);
-        //            res.status(500).send({error: true, message: "An internal server error occurred."});
-        //            return;
-        //        }
-        //
-        //        activityLogger.logActivity(reviewId,"update review",review);
-        //        res.send({error: false, data: review});
-        //    });
-        //});
+    this.setReviewFlag = function (req, res, next) {
+        var tutorId = req.params.tutorId;
+        var reviewId = req.params.reviewId;
+        var flagged = req.body.flagged;
+        var reason = req.body.reason === "undefined" ? "" : req.body.reason;
+
+        if (typeof accepted === "undefined") {
+            var errMsg = "Error: accepted unspecified.";
+            console.log(errMsg);
+            res.status(400).send({error: true, message: errMsg});
+            return;
+        }
+
+        Reviews.findById(reviewId).exec(function (err, review) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            review.flagged = flagged;
+            review.reason = reason;
+
+            review.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                activityLogger.logActivity(reviewId,"update review",review);
+                res.send({error: false, data: review});
+            });
+        });
     };
 
 //  Removes the review from the list of reviews for a tutor
@@ -287,29 +288,29 @@ var TutorController = function(app) {
 //  @returns {Response}              The result of the update operation.
     this.removeReview = function (req, res, next) {
         res.status(500).send({error: true, message: "Feature not implemented"});
-        //var tutorId = req.params.tutorId;
-        //var reviewId = req.params.reviewId;
-        //
-        //Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
-        //    if (err) {
-        //        console.log(err.message);
-        //        res.status(500).send({error: true, message: "An internal server error occurred."});
-        //        return;
-        //    }
-        //
-        //    tutor.reviews.splice(tutor.reviews.indexOf(reviewId), 1);
-        //
-        //    tutor.save(function (err) {
-        //        if (err) {
-        //            console.log(err.message);
-        //            res.status(500).send({error: true, message: "An internal server error occurred."});
-        //            return;
-        //        }
-        //
-        //        activityLogger.logActivity(tutorId,"update tutor",tutor);
-        //        res.send({error: false, data: reviewId});
-        //    });
-        //});
+        var tutorId = req.params.tutorId;
+        var reviewId = req.params.reviewId;
+
+        Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            tutor.reviews.splice(tutor.reviews.indexOf(reviewId), 1);
+
+            tutor.save(function (err) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                activityLogger.logActivity(tutorId,"update tutor",tutor);
+                res.send({error: false, data: reviewId});
+            });
+        });
     };
 
 };

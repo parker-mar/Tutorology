@@ -18,9 +18,23 @@ var Profiles = app.models.Profiles;
 var toExport = {};
 
 /* Shared Variables */
+toExport.admin = {
+    email: 'Admin@Admin_test.com',
+    pass: '1',
+    password: '1',
+    authorization: 'Admin',
+    confirmPass: '1',
+    displayName: 'Admin',
+    requests: [],
+    reviews: [],
+    topics: [],
+    referrals: []
+};
+
 toExport.physChemTutor = {
     email: 'physchem@physchem_test.com',
     pass: '1',
+    password: '1',
     confirmPass: '1',
     displayName: 'physChemTutor',
     requests: [],
@@ -33,6 +47,7 @@ toExport.physChemTutor = {
 toExport.physTutor = {
     email: 'phys@phys_test.com',
     pass: '1',
+    password: '1',
     confirmPass: '1',
     displayName: 'physTutor',
     requests: [],
@@ -45,6 +60,7 @@ toExport.physTutor = {
 toExport.chemTutor = {
     email: 'chem@chem_test.com',
     pass: '1',
+    password: '1',
     confirmPass: '1',
     displayName: 'chemTutor',
     requests: [],
@@ -52,6 +68,30 @@ toExport.chemTutor = {
     topics: [],
     referrals: [],
     charge: 0.00
+};
+
+toExport.physChemStudent = {
+    email: 'physChemStudent@physChemStudent_test.com',
+    pass: '1',
+    password: '1',
+    confirmPass: '1',
+    displayName: 'physChemStudent',
+    requests: [],
+    reviews: [],
+    topics: [],
+    referrals: []
+};
+
+toExport.physChemStudent2 = {
+    email: 'physChemStudent2@physChemStudent2_test.com',
+    pass: '1',
+    password: '1',
+    confirmPass: '1',
+    displayName: 'physChemStudent2',
+    requests: [],
+    reviews: [],
+    topics: [],
+    referrals: []
 };
 
 toExport.phys = {
@@ -66,23 +106,22 @@ toExport.topicToAdd = {
     name: 'eng_test'
 };
 
-toExport.physChemStudent = {
-    email: 'physChemStudent@physChemStudent_test.com',
-    pass: '1',
-    confirmPass: '1',
-    displayName: 'physChemStudent',
-    requests: [],
-    reviews: [],
-    topics: [],
-    referrals: []
-};
-
 toExport.physRequest = {
     message: "Hi PhysChemTutor, I want to take Phys. Thanks. Sincerely, physChemStudent"
 };
 
 toExport.chemRequest = {
     message: "Hi PhysChemTutor, I want to take Chem. Thanks. Sincerely, physChemStudent"
+};
+
+toExport.physChemTutorReviewGood = {
+    rating: 5,
+    message: "Good tutor!_test"
+};
+
+toExport.physChemTutorReviewBad = {
+    rating: 1,
+    message: "Bad tutor!_test"
 };
 
 /* Test helper functions */
@@ -93,8 +132,6 @@ toExport.createUser = function(userArg, userType) {
     } else if (userType == 'Student') {
         Database = Students;
     }
-
-    userArg.password = userArg.pass;
 
     Database.create(userArg, function(err, user) {
         if (err) {
@@ -242,5 +279,66 @@ toExport.addRequest = function(studentArg, tutorArg, requestArg) {
     });
 };
 
+toExport.createReview = function(reviewArg) {
+    Reviews.create(reviewArg, function(err, review) {
+        if (err) {
+            should.fail(err.message);
+        }
+        reviewArg._id = review._id;
+    });
+};
+
+toExport.deleteReview = function(reviewArg) {
+    Reviews.remove({_id: reviewArg._id}, function (err) {
+        if (err) {
+            console.log(err.message);
+        } else {
+            console.log("Review " + reviewArg._id + " deleted successfully");
+        }
+    });
+};
+
+toExport.addReview = function(studentArg, tutorArg, reviewArg) {
+
+    Students.findById(studentArg._id).exec(function (err, student) {
+        if (err) {
+            console.log(err.message);
+            res.status(500).send({error: true, message: "An internal server error occurred."});
+            return;
+        }
+
+        studentArg.reviews.push(reviewArg._id);
+
+        student.reviews.push(reviewArg._id);
+
+        student.save(function (err) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+        });
+    });
+
+    Tutors.findById(tutorArg._id).exec(function (err, tutor) {
+        if (err) {
+            console.log(err.message);
+            res.status(500).send({error: true, message: "An internal server error occurred."});
+            return;
+        }
+
+        tutorArg.reviews.push(reviewArg._id);
+
+        tutor.reviews.push(reviewArg._id);
+
+        tutor.save(function (err) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+        });
+    });
+};
 
 module.exports = toExport;

@@ -10,7 +10,7 @@ module.exports = function(app){
         tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors'},
         created_at: { type: Date, required: true, default: Date.now },
         message: String,
-        isRead: Boolean
+        isRead: { type: Boolean, default: false }
     });
 
     ReferralSchema.plugin(findOrCreate);
