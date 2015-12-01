@@ -1,15 +1,11 @@
 /**
  * Created by parkeraldricmar on 15-11-30.
+ *
+ * Test case respository and helper methods
  */
 
 var should = require('should');
-var assert = require('assert');
-var async = require("async");
-var mongoose = require('mongoose');
-var request = require('supertest');
-var server = request.agent('http://127.0.0.1:3000');
 var app = require('../server.js');
-var test = require('./test.js');
 
 var Users = app.models.Users;
 var Tutors = app.models.Tutors;

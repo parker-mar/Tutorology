@@ -1,24 +1,11 @@
 /**
  * Created by parkeraldricmar on 15-11-29.
- * Based on https://thewayofcode.wordpress.com/2013/04/21/how-to-build-and-test-rest-api-with-nodejs-express-mocha/
  */
 
 var should = require('should');
-var assert = require('assert');
 var async = require("async");
-var mongoose = require('mongoose');
-var request = require('supertest');
-var server = request.agent('http://127.0.0.1:3000');
-var app = require('../server.js');
+var server = require('supertest').agent('http://127.0.0.1:3000');
 var test = require('./test.js');
-
-var Users = app.models.Users;
-var Tutors = app.models.Tutors;
-var Students = app.models.Students;
-var Topics = app.models.Topics;
-var Requests = app.models.Requests;
-var Reviews = app.models.Reviews;
-var Profiles = app.models.Profiles;
 
 describe('Tutor Controller Test', function() {
 
