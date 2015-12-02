@@ -155,7 +155,7 @@ toExport.deleteUser = function(userArg, userType) {
         if (err) {
             console.log(err.message);
         } else {
-            console.log("User " + userArg._id + "deleted successfully");
+            //console.log("User " + userArg._id + "deleted successfully");
         }
     });
 };
@@ -190,7 +190,7 @@ toExport.deleteTopic = function(topicArg) {
         if (err) {
             console.log(err.message);
         } else {
-            console.log("Topic " + topicArg._id + "deleted successfully");
+            //console.log("Topic " + topicArg._id + "deleted successfully");
         }
     });
 };
@@ -231,7 +231,7 @@ toExport.deleteRequest = function(requestArg) {
         if (err) {
             console.log(err.message);
         } else {
-            console.log("Request " + requestArg._id + " deleted successfully");
+            //console.log("Request " + requestArg._id + " deleted successfully");
         }
     });
 };
@@ -293,7 +293,7 @@ toExport.deleteReview = function(reviewArg) {
         if (err) {
             console.log(err.message);
         } else {
-            console.log("Review " + reviewArg._id + " deleted successfully");
+            //console.log("Review " + reviewArg._id + " deleted successfully");
         }
     });
 };

@@ -189,7 +189,7 @@ var TutorController = function(app) {
         var tutorId = req.params.tutorId;
         var requestId = req.params.requestId;
         var accepted = req.body.accepted;
-        var response = req.body.response === "undefined" ? "" : req.body.response;
+        var response = req.body.response;
 
         if (typeof accepted === "undefined") {
             var errMsg = "Error: accepted unspecified.";
@@ -207,7 +207,10 @@ var TutorController = function(app) {
 
             request.hasResponse = true;
             request.accepted = accepted;
-            request.response = response;
+
+            if (typeof response !== "undefined") {
+                request.response = response;
+            }
 
             request.save(function (err) {
                 if (err) {
@@ -249,10 +252,10 @@ var TutorController = function(app) {
         var tutorId = req.params.tutorId;
         var reviewId = req.params.reviewId;
         var flagged = req.body.flagged;
-        var reason = req.body.reason === "undefined" ? "" : req.body.reason;
+        var reason = req.body.reason;
 
-        if (typeof accepted === "undefined") {
-            var errMsg = "Error: accepted unspecified.";
+        if (typeof flagged === "undefined") {
+            var errMsg = "Error: flagged unspecified.";
             console.log(errMsg);
             res.status(400).send({error: true, message: errMsg});
             return;
@@ -266,7 +269,10 @@ var TutorController = function(app) {
             }
 
             review.flagged = flagged;
-            review.reason = reason;
+
+            if (typeof reason !== "undefined") {
+                review.reason = reason;
+            }
 
             review.save(function (err) {
                 if (err) {
@@ -287,7 +293,6 @@ var TutorController = function(app) {
 //  @paramarg {String} topicId       The ID of the topic is to be removed.
 //  @returns {Response}              The result of the update operation.
     this.removeReview = function (req, res, next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
         var tutorId = req.params.tutorId;
         var reviewId = req.params.reviewId;
 
