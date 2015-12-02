@@ -12,14 +12,12 @@ var TutorController = function(app) {
 //  Gets tutors according to query: exactly one of tutor name or topic name must be specified.
 //  @bodyarg {String} name      The tutor name to regex match query by (optional).
 //  @bodyarg {String} topicName The topic name to regex match query by (optional).
-//  @bodyarg {Number} limit     The maximum number of documents returned (optional).
 //  @returns {Response}         Tutors in the database according to query, populated with profile and topics.
 //      If query has name, sort ascending by topic name.
 //      If query has topicName, sort ascending by tutor name.
     this.getTutors = function (req, res, next) {
         var name = req.body.name;
         var topicName = req.body.topicName;
-        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
         if (typeof name !== "undefined") {
 
@@ -29,7 +27,6 @@ var TutorController = function(app) {
                 .populate([
                     {path: 'profile'},
                     {path: 'topics', options: {sort: {name: 1}}}])
-                .limit(limit)
                 .exec(function (err, tutors) {
                     if (err) {
                         console.log(err.message);
@@ -52,7 +49,6 @@ var TutorController = function(app) {
                 Tutors
                     .find({topics: {"$all": topic}}, Tutors.defaultFilter)
                     .sort({'displayName': 1})
-                    .limit(limit)
                     .populate([
                         {path: 'profile'},
                         {path: 'topics'}])
@@ -151,15 +147,12 @@ var TutorController = function(app) {
 
 //  Gets all topics taught by the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
-//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
 //  @returns {Response}             All the topics taught by the tutor with ID tutorId sorted ascending by topic name.
     this.getTopics = function (req, res, next) {
         var tutorId = req.params.tutorId;
-        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
         Tutors.findById(tutorId, Tutors.defaultFilter)
             .populate({path: 'topics', options: {sort: {name: 1}}})
-            .limit(limit)
             .exec(function (err, tutor) {
                 if (err) {
                     console.log(err.message);
@@ -205,12 +198,10 @@ var TutorController = function(app) {
 
 //  Gets all requests made to the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
-//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
 //  @returns {Response}             All the requests made to the tutor with ID tutorId sorted descending by created_at,
 //  with the student in the request, profile of the student, and the topic in the request.
     this.getRequests = function (req, res, next) {
         var tutorId = req.params.tutorId;
-        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
         Tutors
             .findById(tutorId, Tutors.defaultFilter)
@@ -219,7 +210,6 @@ var TutorController = function(app) {
                     {path: 'studentId', populate:
                         {path: 'profile'}},
                     {path: 'topicId'}]})
-            .limit(limit)
             .exec(function (err, tutor) {
                 if (err) {
                     console.log(err.message);
@@ -279,12 +269,10 @@ var TutorController = function(app) {
 
 //  Gets all reviews for the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
-//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
 //  @returns {Response}             All the reviews for the tutor with ID tutorId, sorted descending by created_at,
 //  with the student in the request, profile of the student, the tutor in the request, and the profile of the tutor.
     this.getReviews = function (req, res, next) {
         var tutorId = req.params.tutorId;
-        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
         Tutors
             .findById(tutorId, Tutors.defaultFilter)
@@ -294,7 +282,6 @@ var TutorController = function(app) {
                         {path: 'profile'}},
                     {path: 'tutorId', populate:
                         {path: 'profile'}}]})
-            .limit(limit)
             .exec(function (err, tutor) {
                 if (err) {
                     console.log(err.message);
