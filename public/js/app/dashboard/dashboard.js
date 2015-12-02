@@ -89,6 +89,9 @@ angular.module('MyApp.dashboard', ['ngRoute'])
             	$http.get('/api/students/' + $rootScope.actor._id + '/getRecommendedTutors/').then(
             		function successCallback(res){
             			$scope.tutors = res.data.data;
+                        $scope.tutors.forEach(function(tutor){
+                            tutor.topicStr = tutor.topics.join([separator = ',']);
+                        });
             			$scope.userType = 'Student';
             		});
 

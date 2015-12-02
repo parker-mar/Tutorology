@@ -1,4 +1,3 @@
-<div> test </div>
 <div>
 
     <div ng-if="userType == 'Student'" class="container">
@@ -45,7 +44,7 @@
                             <span> {{tutor.rating}} </span>
                         </div>
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
-                            <span> Description: {{tutor.decription}} </span>
+                            <span> Description: {{tutor.description}} </span>
                         </div>
                     </div>
                 </div>
@@ -83,7 +82,7 @@
 
                      <div class="form-group">
                           <label for="comment">Request:</label>
-                          <textarea class="form-control" rows="3" disabled></textarea>
+                          <textarea class="form-control" rows="3" ng-bind="req.reqMessage" disabled></textarea>
                     </div>
 
                      <div ng-if="!req.hasResponse || req.accepted" ng-disabled="req.hasResponse" class="form-group">
