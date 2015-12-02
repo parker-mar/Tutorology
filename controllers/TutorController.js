@@ -9,54 +9,64 @@ var TutorController = function(app) {
     var Reviews = app.models.Reviews;
     var activityLogger = app.activityLogger;
 
-    function getTutorsQuery (req, res, next, query) {
-        Tutors.find(query, Tutors.defaultFilter).exec(function (err, tutors) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-                return;
-            }
-
-            res.send({error: false, data: tutors});
-        });
-    }
-
-//  Gets tutors according to query, or all if none.
-//  @bodyarg {String} name      The tutor's name to query by (optional).
-//  @bodyarg {String} topicName The tutor's topicName to query by (optional).
-//  @returns {Response} Tutors in the database according to query, or all if none.
+//  Gets tutors according to query: exactly one of tutor name or topic name must be specified.
+//  @bodyarg {String} name      The tutor name to regex match query by (optional).
+//  @bodyarg {String} topicName The topic name to regex match query by (optional).
+//  @bodyarg {Number} limit     The maximum number of documents returned (optional).
+//  @returns {Response} Tutors in the database according to query, populated with profile and topics.
+//      If query has name, sort ascending by topic name.
+//      If query has topicName, sort ascending by tutor name.
     this.getTutors = function (req, res, next) {
         var name = req.body.name;
         var topicName = req.body.topicName;
+        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
-        // Pass in query options
-        var query = {};
         if (typeof name !== "undefined") {
-            query.displayName = name;
-        }
-        if (typeof topicName !== "undefined") {
-            Topics.findOne({name: topicName}).exec(function (err, topic) {
+
+            // Query has tutor name
+            Tutors
+                .find({displayName: new RegExp("^"+name)}, Tutors.defaultFilter)
+                .populate([
+                    {path: 'profile'},
+                    {path: 'topics', options: {sort: {name: 1}}}])
+                .limit(limit)
+                .exec(function (err, tutors) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                        return;
+                    }
+
+                    res.send({error: false, data: tutors});
+                });
+        } else {
+
+            // Query has topic name
+            Topics.findOne({name: new RegExp("^"+topicName)}).exec(function (err, topic) {
                 if (err) {
                     console.log(err.message);
                     res.status(500).send({error: true, message: "An internal server error occurred."});
                     return;
                 }
 
-                if (topic === null) {
-                    var errMsg = "Error: No tutor teaches the topic with the given topicName.";
-                    console.log(errMsg);
-                    res.status(400).send({error: true, message: errMsg});
-                    return;
-                }
+                Tutors
+                    .find({topics: {"$all": topic}}, Tutors.defaultFilter)
+                    .sort({'displayName': 1})
+                    .limit(limit)
+                    .populate([
+                        {path: 'profile'},
+                        {path: 'topics'}])
+                    .exec(function (err, tutors) {
+                        if (err) {
+                            console.log(err.message);
+                            res.status(500).send({error: true, message: "An internal server error occurred."});
+                            return;
+                        }
 
-                query.topics = {"$all": topic};
-
-                getTutorsQuery (req, res, next, query);
+                        res.send({error: false, data: tutors});
+                    });
             });
-            return;
         }
-
-        getTutorsQuery (req, res, next, query);
     };
 
 // Adds a topic to the list of topics taught by a tutor.
@@ -115,19 +125,24 @@ var TutorController = function(app) {
 
 //  Gets all topics taught by the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
-//  @returns {Response}             All the topics taught by the tutor with ID tutorId.
+//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
+//  @returns {Response}             All the topics taught by the tutor with ID tutorId sorted ascending by topic name.
     this.getTopics = function (req, res, next) {
         var tutorId = req.params.tutorId;
+        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
-        Tutors.findById(tutorId, Tutors.defaultFilter).populate('topics').exec(function (err, tutor) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-                return;
-            }
+        Tutors.findById(tutorId, Tutors.defaultFilter)
+            .populate({path: 'topics', options: {sort: {name: 1}}})
+            .limit(limit)
+            .exec(function (err, tutor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
 
-            res.send({error: false, data: tutor.topics});
-        });
+                res.send({error: false, data: tutor.topics});
+            });
     };
 
 
@@ -164,19 +179,29 @@ var TutorController = function(app) {
 
 //  Gets all requests made to the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
-//  @returns {Response}             All the requests made to the tutor with ID tutorId.
+//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
+//  @returns {Response}             All the requests made to the tutor with ID tutorId sorted descending by created_at
     this.getRequests = function (req, res, next) {
         var tutorId = req.params.tutorId;
+        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
-        Tutors.findById(tutorId, Tutors.defaultFilter).populate('requests').exec(function (err, tutor) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-                return;
-            }
+        Tutors
+            .findById(tutorId, Tutors.defaultFilter)
+            .populate(
+                {path: 'requests', options: {sort: {created_at: -1}}, populate: [
+                    {path: 'studentId', populate:
+                        {path: 'profile'}},
+                    {path: 'topicId'}]})
+            .limit(limit)
+            .exec(function (err, tutor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
 
-            res.send({error: false, data: tutor.requests});
-        });
+                res.send({error: false, data: tutor.requests});
+            });
     };
 
 //  Updates the request to the tutor with a response
@@ -227,18 +252,29 @@ var TutorController = function(app) {
 
 //  Gets all reviews for the tutor with ID tutorId.
 //  @paramarg {String} tutorId      The ID of the tutor.
+//  @bodyarg {Number} limit         The maximum number of documents returned (optional).
 //  @returns {Response}             All the reviews for the tutor with ID tutorId.
     this.getReviews = function (req, res, next) {
         var tutorId = req.params.tutorId;
+        var limit = typeof req.body.limit !== "undefined" ? req.body.limit : 0;
 
-        Tutors.findById(tutorId, Tutors.defaultFilter).populate('reviews').exec(function (err, tutor) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-                return;
-            }
+        Tutors
+            .findById(tutorId, Tutors.defaultFilter)
+            .populate(
+                {path: 'reviews', options: {sort: {created_at: -1}}, populate: [
+                    {path: 'studentId', populate:
+                        {path: 'profile'}},
+                    {path: 'tutorId', populate:
+                        {path: 'profile'}}]})
+            .limit(limit)
+            .exec(function (err, tutor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
 
-            res.send({error: false, data: tutor.reviews});
+                res.send({error: false, data: tutor.reviews});
         });
     };
 

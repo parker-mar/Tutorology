@@ -217,26 +217,18 @@ toExport.addTopic = function(tutorArg, topicArg) {
     });
 };
 
-toExport.createRequest = function(requestArg) {
+toExport.createAndAddRequest = function(requestArg, studentArg, tutorArg, topicArg) {
+
+    requestArg.studentId = studentArg._id;
+    requestArg.tutorId = tutorArg._id;
+    requestArg.topicId = topicArg._id;
+
     Requests.create(requestArg, function(err, request) {
         if (err) {
             should.fail(err.message);
         }
         requestArg._id = request._id;
     });
-};
-
-toExport.deleteRequest = function(requestArg) {
-    Requests.remove({_id: requestArg._id}, function (err) {
-        if (err) {
-            console.log(err.message);
-        } else {
-            //console.log("Request " + requestArg._id + " deleted successfully");
-        }
-    });
-};
-
-toExport.addRequest = function(studentArg, tutorArg, requestArg) {
 
     Students.findById(studentArg._id).exec(function (err, student) {
         if (err) {
@@ -279,26 +271,28 @@ toExport.addRequest = function(studentArg, tutorArg, requestArg) {
     });
 };
 
-toExport.createReview = function(reviewArg) {
+toExport.deleteRequest = function(requestArg) {
+    Requests.remove({_id: requestArg._id}, function (err) {
+        if (err) {
+            console.log(err.message);
+        } else {
+            //console.log("Request " + requestArg._id + " deleted successfully");
+        }
+    });
+};
+
+toExport.createAndAddReview = function(reviewArg, studentArg, tutorArg) {
+
+    reviewArg.studentId = studentArg._id;
+    reviewArg.tutorId = tutorArg._id;
+
     Reviews.create(reviewArg, function(err, review) {
         if (err) {
             should.fail(err.message);
         }
+
         reviewArg._id = review._id;
     });
-};
-
-toExport.deleteReview = function(reviewArg) {
-    Reviews.remove({_id: reviewArg._id}, function (err) {
-        if (err) {
-            console.log(err.message);
-        } else {
-            //console.log("Review " + reviewArg._id + " deleted successfully");
-        }
-    });
-};
-
-toExport.addReview = function(studentArg, tutorArg, reviewArg) {
 
     Students.findById(studentArg._id).exec(function (err, student) {
         if (err) {
@@ -340,5 +334,16 @@ toExport.addReview = function(studentArg, tutorArg, reviewArg) {
         });
     });
 };
+
+toExport.deleteReview = function(reviewArg) {
+    Reviews.remove({_id: reviewArg._id}, function (err) {
+        if (err) {
+            console.log(err.message);
+        } else {
+            //console.log("Review " + reviewArg._id + " deleted successfully");
+        }
+    });
+};
+
 
 module.exports = toExport;

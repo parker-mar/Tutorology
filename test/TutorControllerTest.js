@@ -28,15 +28,11 @@ describe('Tutor Controller Test', function() {
             function(cb) { test.addTopic(test.physTutor, test.phys); cb(); },
             function(cb) { test.addTopic(test.chemTutor, test.chem); cb(); },
 
-            function(cb) { test.createRequest(test.physRequest); cb(); },
-            function(cb) { test.createRequest(test.chemRequest); cb(); },
-            function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.physRequest); cb(); },
-            function(cb) { test.addRequest(test.physChemStudent, test.physChemTutor, test.chemRequest); cb(); },
+            function(cb) { test.createAndAddRequest(test.physRequest, test.physChemStudent, test.physChemTutor, test.phys); cb(); },
+            function(cb) { test.createAndAddRequest(test.chemRequest, test.physChemStudent, test.physChemTutor, test.chem); cb(); },
 
-            function(cb) { test.createReview(test.physChemTutorReviewGood); cb(); },
-            function(cb) { test.createReview(test.physChemTutorReviewBad); cb(); },
-            function(cb) { test.addReview(test.physChemStudent, test.physChemTutor, test.physChemTutorReviewGood); cb(); },
-            function(cb) { test.addReview(test.physChemStudent2, test.physChemTutor, test.physChemTutorReviewBad); cb(); }
+            function(cb) { test.createAndAddReview(test.physChemTutorReviewGood, test.physChemStudent, test.physChemTutor); cb(); },
+            function(cb) { test.createAndAddReview(test.physChemTutorReviewBad, test.physChemStudent, test.physChemTutor); cb(); }
         ], done);
     });
 
@@ -96,27 +92,6 @@ describe('Tutor Controller Test', function() {
     /* Test getTutors */
     describe('Test getTutors', function() {
 
-        it('Get all tutors', function(done) {
-            server
-                .post('/api/get-tutors')
-                .expect(200)
-                .expect(function(res) {
-                    var tutorIds = res.body.data.map(function(tutor) {
-                        return tutor._id;
-                    });
-
-                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(test.physTutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(test.chemTutor._id.toString()).should.be.greaterThan(-1);
-                })
-                .end(function(err){
-                    if (err) {
-                        return done(err);
-                    }
-                    done();
-                });
-        });
-
         it('Get tutor by name', function(done){
             server
                 .post('/api/get-tutors')
@@ -155,31 +130,6 @@ describe('Tutor Controller Test', function() {
 
                     tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
                     tutorIds.indexOf(test.physTutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(test.chemTutor._id.toString()).should.equal(-1);
-                })
-                .end(function(err){
-                    if (err) {
-                        return done(err);
-                    }
-                    done();
-                });
-        });
-
-        it('Get tutor by name and topicName', function(done){
-            server
-                .post('/api/get-tutors')
-                .send({
-                    name: test.physChemTutor.displayName,
-                    topicName: test.physTutor.topics[0].name
-                })
-                .expect(200)
-                .expect(function (res) {
-                    var tutorIds = res.body.data.map(function(tutor) {
-                        return tutor._id;
-                    });
-
-                    tutorIds.indexOf(test.physChemTutor._id.toString()).should.be.greaterThan(-1);
-                    tutorIds.indexOf(test.physTutor._id.toString()).should.equal(-1);
                     tutorIds.indexOf(test.chemTutor._id.toString()).should.equal(-1);
                 })
                 .end(function(err){
@@ -613,7 +563,6 @@ describe('Tutor Controller Test', function() {
                     });
 
                     var review = reviews[reviewIds.indexOf(test.physChemTutorReviewBad._id.toString())];
-                    console.log(review);
                     review.flagged.should.equal(false);
                     review.reason.should.equal(reason);
                 })

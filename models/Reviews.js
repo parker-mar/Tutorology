@@ -5,8 +5,8 @@ module.exports = function(app){
     var findOrCreate = require('mongoose-findorcreate');
 
     var ReviewSchema = new app.mongoose.Schema({
-        studentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
-        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'},
+        studentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students', required: true},
+        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors', required: true},
         created_at: { type: Date, required: true, default: Date.now },
         rating: Number,
         message: String,

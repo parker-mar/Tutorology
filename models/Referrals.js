@@ -5,9 +5,9 @@ module.exports = function(app){
     var findOrCreate = require('mongoose-findorcreate');
 
     var ReferralSchema = new app.mongoose.Schema({
-        fromStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
-        toStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students'},
-        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors'},
+        fromStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students', required: true},
+        toStudentId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Students', required: true},
+        tutorId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Tutors', required: true},
         created_at: { type: Date, required: true, default: Date.now },
         message: String,
         isRead: { type: Boolean, default: false }

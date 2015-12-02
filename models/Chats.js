@@ -5,8 +5,8 @@ module.exports = function(app){
     var findOrCreate = require('mongoose-findorcreate');
 
     var ChatSchema = new app.mongoose.Schema({
-        fromId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
-        toId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users'},
+        fromId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users', required: true},
+        toId: { type: app.mongoose.SchemaTypes.ObjectId, ref: 'Users', required: true},
         messages: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'ChatMessages'}]
     });
 
