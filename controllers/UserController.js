@@ -24,6 +24,47 @@ var UserController = function(app) {
             });
     };
 
+//  Gets the target User
+//  @paramarg {String} userId           The requested User's ID.
+//  @returns {Response}                 The requested User with Profile populated, will also populate Activities and Connections if Actor is admin.
+    this.getUser = function (req, res, next) {
+        var actorId = req.session.userId;
+        var userId = req.params.userId;
+        Users.findById(actorId, Users.defaultFilter)
+            .populate('profile')
+            .exec(function (err, actor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                } else if(actor.authorization == "SAdmin" || actor.authorization == "Admin"){
+                    Users.findById(userId, Users.defaultFilter)
+                        .populate('profile').populate('activities').populate('connections')
+                        .exec(function (err, user) {
+                            if (err) {
+                                console.log(err.message);
+                                res.status(500).send({error: true, message: "An internal server error occurred."});
+                            } else {
+                                activityLogger.logActivity(actorId,"view_user",user);
+                                res.send({error: false, data: user});
+                            }
+                        });
+                }else{
+
+                    Users.findById(userId, Users.defaultFilter)
+                        .populate('profile')
+                        .exec(function (err, user) {
+                            if (err) {
+                                console.log(err.message);
+                                res.status(500).send({error: true, message: "An internal server error occurred."});
+                            } else {
+                                activityLogger.logActivity(actorId,"view_user",user);
+                                res.send({error: false, data: user});
+                            }
+                        });
+                }
+            });
+    };
+
 //  Updates the target user
 //  @paramarg {String} userId         The ID of the User to be changed.
 //  @bodyarg {String} displayName     The new User displayName (optional).
@@ -69,6 +110,41 @@ var UserController = function(app) {
                     }
                 });
             });
+    };
+
+//  Deletes the target User
+//  @paramarg {String} userId           The ID of the User to be deleted.
+//  @returns {Response}                 The result of the delete operation.
+    this.deleteUser = function (req, res, next) {
+        var userId = req.params.userId;
+        var actorId = req.session.userId;
+        Users.findById(userId).populate('profile').exec(function (err, user) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+            } else if(user.authorization == "SAdmin"){
+                console.log("Removing the Super Administrator is prohibited");
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+            }else{
+                Profiles.remove({_id: user.profile._id}, function (err) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                    } else {
+                        Users.remove({_id: user._id}, function (err) {
+                            if (err) {
+                                console.log(err.message);
+                                res.status(500).send({error: true, message: "An internal server error occurred."});
+                            } else {
+                                activityLogger.logActivity(actorId,"delete_user",user);
+                                console.log("User " + userId + " Removed Successfully");
+                                res.send({error: false, message: "User " + user.email + " Removed Successfully"});
+                            }
+                        });
+                    }
+                });
+            }
+        });
     };
 
 //  Changes the password of the User
@@ -122,99 +198,6 @@ var UserController = function(app) {
         }
     };
 
-//  Gets the target User
-//  @paramarg {String} userId           The requested User's ID.
-//  @returns {Response}                 The requested User with Profile populated, will also populate Activities and Connections if Actor is admin.
-    this.getUser = function (req, res, next) {
-        var actorId = req.session.userId;
-        var userId = req.params.userId;
-        Users.findById(actorId, Users.defaultFilter)
-            .populate('profile')
-            .exec(function (err, actor) {
-                if (err) {
-                    console.log(err.message);
-                    res.status(500).send({error: true, message: "An internal server error occurred."});
-                } else if(actor.authorization == "SAdmin" || actor.authorization == "Admin"){
-                    Users.findById(userId, Users.defaultFilter)
-                        .populate('profile').populate('activities').populate('connections')
-                        .exec(function (err, user) {
-                            if (err) {
-                                console.log(err.message);
-                                res.status(500).send({error: true, message: "An internal server error occurred."});
-                            } else {
-                                activityLogger.logActivity(actorId,"view_user",user);
-                                res.send({error: false, data: user});
-                            }
-                        });
-                }else{
-
-                    Users.findById(userId, Users.defaultFilter)
-                        .populate('profile')
-                        .exec(function (err, user) {
-                            if (err) {
-                                console.log(err.message);
-                                res.status(500).send({error: true, message: "An internal server error occurred."});
-                            } else {
-                                activityLogger.logActivity(actorId,"view_user",user);
-                                res.send({error: false, data: user});
-                            }
-                        });
-                }
-            });
-
-    };
-
-//  Gets the User who is signed in.
-//  @returns {Response}                 The User who is signed in.
-    this.getActor = function (req, res, next) {
-        var userId = req.session.userId;
-        Users.findById(userId, Users.defaultFilter)
-            .populate('profile')
-            .exec(function (err, user) {
-                if (err) {
-                    console.log(err.message);
-                    res.status(500).send({error: true, message: "An internal server error occurred."});
-                } else {
-                    res.send({error: false, data: user});
-                }
-            });
-    };
-
-//  Deletes the target User
-//  @paramarg {String} userId           The ID of the User to be deleted.
-//  @returns {Response}                 The result of the delete operation.
-    this.deleteUser = function (req, res, next) {
-        var userId = req.params.userId;
-        var actorId = req.session.userId;
-        Users.findById(userId).populate('profile').exec(function (err, user) {
-            if (err) {
-                console.log(err.message);
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-            } else if(user.authorization == "SAdmin"){
-                console.log("Removing the Super Administrator is prohibited");
-                res.status(500).send({error: true, message: "An internal server error occurred."});
-            }else{
-                Profiles.remove({_id: user.profile._id}, function (err) {
-                    if (err) {
-                        console.log(err.message);
-                        res.status(500).send({error: true, message: "An internal server error occurred."});
-                    } else {
-                        Users.remove({_id: user._id}, function (err) {
-                            if (err) {
-                                console.log(err.message);
-                                res.status(500).send({error: true, message: "An internal server error occurred."});
-                            } else {
-                                activityLogger.logActivity(actorId,"delete_user",user);
-                                console.log("User " + userId + " Removed Successfully");
-                                res.send({error: false, message: "User " + user.email + " Removed Successfully"});
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    };
-
 //    userId(param)     String
 //    authorization     String
 //  Sets the authorization level of the target User
@@ -245,6 +228,21 @@ var UserController = function(app) {
             });
     };
 
+//  Gets the User who is signed in.
+//  @returns {Response}                 The User who is signed in.
+    this.getActor = function (req, res, next) {
+        var userId = req.session.userId;
+        Users.findById(userId, Users.defaultFilter)
+            .populate('profile')
+            .exec(function (err, user) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                } else {
+                    res.send({error: false, data: user});
+                }
+            });
+    };
 };
 
 module.exports = UserController;

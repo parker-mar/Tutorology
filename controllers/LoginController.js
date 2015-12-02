@@ -9,7 +9,6 @@ var LoginController = function(app) {
     var Profiles = app.models.Profiles;
     var parse = require('user-agent-parser');
 
-
 //  Logs in the user
 //  @bodyarg {String} email     The email credential.
 //  @bodyarg {String} pass      The password credential.
@@ -38,8 +37,20 @@ var LoginController = function(app) {
                     next();
                 } else {
                     var errMsg = "Error: Invalid email or password.";
-                    console.log(errMsg);
-                    res.status(400).send({error: true, message: errMsg});
+
+                    user.lastFailedLogin = Date.now();
+
+                    user.save(function (err) {
+                        if (err) {
+                            console.log(err.message);
+                            res.status(500).send({error: true, message: "An internal server error occurred."});
+                            return;
+                        }
+
+                        console.log(errMsg);
+                        res.status(400).send({error: true, message: errMsg});
+                    });
+
                 }
             });
         }

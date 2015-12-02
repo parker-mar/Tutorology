@@ -9,6 +9,7 @@ module.exports = function(app){
         email: {type: String, index: {unique: true, dropDups: true}},
         password: String,
         authorization: String,
+        lastFailedLogin: {type: Date, default: new Date(-8640000000000000)},
 
         // User details
         displayName: String,

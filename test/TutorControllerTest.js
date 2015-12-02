@@ -337,7 +337,7 @@ describe('Tutor Controller Test', function() {
     /* Test respondToRequest */
     describe('Test respondToRequest', function() {
 
-            var response = "Certainly! See you at BA3200 @ 5PM tomorrow.";
+        var response = "Certainly! See you at BA3200 @ 5PM tomorrow.";
 
         it('Accept a request and give a response', function(done) {
             server
