@@ -141,6 +141,27 @@ describe('Tutor Controller Test', function() {
         });
     });
 
+    /* Test getTutor */
+    describe('Test getTutor', function() {
+
+        it('Get tutor', function(done){
+            server
+                .get('/api/tutors/' + test.physChemTutor._id)
+                .expect(200)
+                .expect(function (res) {
+                    var tutor = res.body.data;
+
+                    tutor._id.should.equal(test.physChemTutor._id.toString());
+                })
+                .end(function(err){
+                    if (err) {
+                        return done(err);
+                    }
+                    done();
+                });
+        });
+    });
+
     /* Test addTopic */
     describe('Test addTopic', function() {
 

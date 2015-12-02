@@ -65,6 +65,9 @@ module.exports = function(app) {
     app.post(root+'get-tutors',
         securityGate.checkIfUserIsSignedIn, tutorController.getTutors);
 
+    app.get(root+'tutors/:tutorId',
+        securityGate.checkIfUserIsSignedIn, tutorController.getTutor);
+
     app.post(root+'tutors/:tutorId/topics',
         securityGate.checkIfUserIsTutor, tutorController.addTopic);
 
