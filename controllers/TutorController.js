@@ -338,34 +338,22 @@ var TutorController = function(app) {
         });
     };
 
-//  Removes the review from the list of reviews for a tutor
-//  (Not bothering to delete if no more references)
+//  Removes the review
 //  @paramarg {String} tutorId       The ID of the tutor the topic is to be removed from.
-//  @paramarg {String} topicId       The ID of the topic is to be removed.
+//  @paramarg {String} reviewId      The ID of the review to be removed.
 //  @returns {Response}              The result of the update operation.
     this.removeReview = function (req, res, next) {
         var tutorId = req.params.tutorId;
         var reviewId = req.params.reviewId;
 
-        Tutors.findById(tutorId, Tutors.defaultFilter).exec(function (err, tutor) {
+        Reviews.findByIdAndRemove(reviewId).exec(function (err, review) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error: true, message: "An internal server error occurred."});
                 return;
             }
 
-            tutor.reviews.splice(tutor.reviews.indexOf(reviewId), 1);
-
-            tutor.save(function (err) {
-                if (err) {
-                    console.log(err.message);
-                    res.status(500).send({error: true, message: "An internal server error occurred."});
-                    return;
-                }
-
-                activityLogger.logActivity(tutorId,"update tutor",tutor);
-                res.send({error: false, data: reviewId});
-            });
+            res.send({error: false, data: review});
         });
     };
 

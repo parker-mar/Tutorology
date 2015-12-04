@@ -698,9 +698,9 @@ describe('Tutor Controller Test', function() {
                         .delete('/api/tutors/' + test.physChemTutor._id + '/reviews/' + test.physChemTutorReviewBad._id)
                         .expect(200)
                         .expect(function(res) {
-                            var reviewId = res.body.data;
+                            var review = res.body.data;
 
-                            reviewId.should.equal(test.physChemTutorReviewBad._id.toString());
+                            review._id.should.equal(test.physChemTutorReviewBad._id.toString());
                         })
                         .end(cb);
                 },
@@ -729,27 +729,25 @@ describe('Tutor Controller Test', function() {
         });
 
         // It is removed, but getReview keeps reference.
-        //it("Check that the review is removed from the tutor's list of reviews", function(done) {
-        //    server
-        //        .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
-        //        .expect(200)
-        //        .expect(function(res) {
-        //            var reviewMessages = res.body.data.map(function(review) {
-        //                return review.message;
-        //            });
-        //
-        //            console.log(res.body.data);
-        //
-        //            // Not unique, but close and safe enough.
-        //            reviewMessages.indexOf(test.physChemTutorReviewBad.message).should.equal(-1);
-        //        })
-        //        .end(function(err){
-        //            if (err) {
-        //                return done(err);
-        //            }
-        //            done();
-        //        });
-        //});
+        it("Check that the review is removed from the tutor's list of reviews", function(done) {
+            server
+                .get('/api/tutors/' + test.physChemTutor._id + '/reviews')
+                .expect(200)
+                .expect(function(res) {
+                    var reviewMessages = res.body.data.map(function(review) {
+                        return review.message;
+                    });
+
+                    // Not unique, but close and safe enough.
+                    reviewMessages.indexOf(test.physChemTutorReviewBad.message).should.equal(-1);
+                })
+                .end(function(err){
+                    if (err) {
+                        return done(err);
+                    }
+                    done();
+                });
+        });
 
         it('Attempt to remove a review as a non-admin', function(done) {
             server
