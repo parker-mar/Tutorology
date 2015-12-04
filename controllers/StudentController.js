@@ -182,6 +182,7 @@ var StudentController = function(app) {
                     avg = avg / reviews.length;
 
                     tutor.rating = avg;
+                    tutor.reviews.push(review._id);
 
                     tutor.save(function (err) {
                         if (err) {
@@ -190,7 +191,24 @@ var StudentController = function(app) {
                             return;
                         }
 
-                        res.send({error: false, data: review});
+                        Students.findById(studentId, function (err, student) {
+                            if (err) {
+                                console.log(err.message);
+                                res.status(500).send({error: true, message: "An internal server error occurred"});
+                                return;
+                            }
+
+                            student.reviews.push(review._id);
+                            student.save(function (err) {
+                                if (err) {
+                                    console.log(err.message);
+                                    res.status(500).send({error: true, message: "An internal server error occurred"});
+                                    return;
+                                }
+
+                                res.send({error: false, data: review});
+                            });
+                        });
                     });
                 });
             });
