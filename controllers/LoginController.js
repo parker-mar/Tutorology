@@ -25,31 +25,40 @@ var LoginController = function(app) {
             console.log(errMsg);
             res.status(400).send({error:true,message:errMsg});
         } else{
-            Users.findOne({email:email,password:pass}, Users.defaultFilter, function(err, user) {
+            Users.findOne({email:email}, function(err, user) {
+                console.log("TEST");
                 if (err) {
                     console.log(err.message);
                     res.status(500).send({error:true,message:"An internal server error occurred."});
                 }
                 if (user) {
-                    req.session.userId = user._doc._id;
-                    console.log("User "+user.email+" Successfully logged in");
-                    res.send({error: false, data: user});
-                    next();
+
+                    var now = new Date();
+                    if ((now.getTime() - user.lastFailedLogin.getTime()) < 10000 || user.password !== pass){
+
+                        user.lastFailedLogin = new Date();
+                        user.save(function (err) {
+                            console.log("TEST3");
+                            if (err) {
+                                console.log(err.message);
+                                res.status(500).send({error: true, message: "An internal server error occurred."});
+                                return;
+                            }   
+                            var errMsg = "Error: Invalid email or password. Try Again in 10 seconds";
+                            res.status(400).send({error: true, message: errMsg});
+                        });
+
+                    } else {
+                        console.log("TEST4");
+                        req.session.userId = user._doc._id;
+                        console.log("User " + user.email + " Successfully logged in");
+                        res.send({error: false, data: user});
+                        next();
+                    }
                 } else {
                     var errMsg = "Error: Invalid email or password.";
-
-                    user.lastFailedLogin = Date.now();
-
-                    user.save(function (err) {
-                        if (err) {
-                            console.log(err.message);
-                            res.status(500).send({error: true, message: "An internal server error occurred."});
-                            return;
-                        }
-
-                        console.log(errMsg);
-                        res.status(400).send({error: true, message: errMsg});
-                    });
+                    console.log(errMsg);
+                    res.status(400).send({error: true, message: errMsg});
 
                 }
             });
