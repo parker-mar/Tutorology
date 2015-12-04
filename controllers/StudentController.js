@@ -147,6 +147,12 @@ var StudentController = function(app) {
             flagged : false,
             reason : ""
         };
+
+        //Check if Student ID maps to Student
+        //Check if Tutor ID maps to Tutor
+        //Create Review
+        //Add Review to Student
+        //Add Review to Tutor
         Reviews.create(attributes, function (err, review) {
             if (err) {
                 console.log(err.message);

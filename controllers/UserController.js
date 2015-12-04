@@ -32,6 +32,7 @@ var UserController = function(app) {
         var userId = req.params.userId;
         Users.findById(actorId, Users.defaultFilter)
             .populate('profile')
+            .populate('reviews')
             .exec(function (err, actor) {
                 if (err) {
                     console.log(err.message);

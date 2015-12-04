@@ -4,6 +4,10 @@
         <div class="img-container" style="height:200px">
             <img ng-src="{{(user.profile.image)?user.profile.image:'/img/default-profile.jpg'}}" class="img-rounded img-profile">
         </div>
+        <button ng-if="(user.authorization !='SAdmin') && ( (actor._id == user._id) || (actor.authorization=='Admin'&& user.authorization == 'User') || (actor.authorization =='SAdmin'))" class="btn btn-default" ng-click="deleteUser()">Delete User</button>
+        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'User'" class="btn btn-default" ng-click="makeUserAdmin()">Make Admin</button>
+        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'Admin'" class="btn btn-default" ng-click="demoteToUser()">Demote to User</button>
+
         <div style="margin-bottom:10px;margin-top:10px">
             <strong>Browse: </strong><input type="file" id="file"/>
         </div>
@@ -64,27 +68,13 @@
                     </tr>
                     <tr>
                         <td><input ng-model="newTopic.topicName" class="form-control" name="newTopic" type="text"></td>
-                        <td><button class="btn btn-default" ng-click="addTopic()">Add Topic</button></td>
+                        <td><button class="btn btn-primary" ng-click="addTopic()">Add Topic</button></td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-8">
-        <h2>Reviews</h2>
-        <div ng-repeat="review in user.reviews" class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{user.displayName}}  {{review.rating}}</h3>
-            </div>
-            <div class="panel-body">
-                {{review.message}}
-            </div>
-        </div>
-    </div>
-</div>
-
 <form name="form" data-toggle="validator" role="form">
     <div class="row">
         <div class="col-xs-12">

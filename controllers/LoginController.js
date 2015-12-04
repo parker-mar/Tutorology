@@ -122,6 +122,7 @@ var LoginController = function(app) {
                             var Database = Users;
                             var attributes = {
                                 email: email,
+                                displayName: email,
                                 password: pass,
                                 authorization: authorization,
                                 profile: profile._id

@@ -13,6 +13,7 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
 
 .controller("EditProfileController", ['$scope','$http','$routeParams','$rootScope','$base64', function($scope,$http,$routeParams,$rootScope,$base64) {
     $scope.user = {};
+    $scope.user.charge = 0;
     $scope.passChange = {};
     $scope.newTopic = {};
     window.scope = $scope;
@@ -57,7 +58,7 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
         $(".error").hide();
         if($scope.user.profile.description.length > 500)
             $rootScope.displayAlert("error","Error: Description text exceeds maximum length of 500.");
-        else if($scope.user.charge < 0 || isNaN($scope.user.charge)){
+        else if($scope.user.userType == "Tutors" && ($scope.user.charge < 0 || isNaN($scope.user.charge))){
             $rootScope.displayAlert("error","Error: Rate must be a Positive number.");
         } else{
             var usertemp = {};
