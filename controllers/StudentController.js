@@ -157,8 +157,43 @@ var StudentController = function(app) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
             }
-            res.send({error: false, data: review});
+
+            Tutors.findById(tutorId, function (err, tutor) {
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                Reviews.find({tutorId : tutorId}, function(err, reviews) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                        return;
+                    }
+
+                    var avg = 0;
+                    for (i = 0; i < reviews.length; i++) {
+                        avg += reviews[i].rating;
+                    }
+
+                    avg = avg / reviews.length;
+
+                    tutor.rating = avg;
+
+                    tutor.save(function (err) {
+                        if (err) {
+                            console.log(err.message);
+                            res.status(500).send({error: true, message: "An internal server error occurred"});
+                            return;
+                        }
+
+                        res.send({error: false, data: review});
+                    });
+                });
+            });
         });
     };
 
@@ -225,7 +260,7 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
 
-        Referrals.find({toStudentId : studentId}).exec(function (err, referrals) {
+        Referrals.find({toStudentId : studentId}).populate('fromStudentId').populate('tutorId').exec(function (err, referrals) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
@@ -286,9 +321,48 @@ var StudentController = function(app) {
         });
     };
 
+//  Gets recommended tutors for the student. This is done by getting
+//  up to three tutors related to the last topic the student made a request for.
+//  @paramarg {String} studentId     The ID of the student who has the referral.
+//  @returns {Response}              An array of recommended tutors.
     this.getRecommendations = function (req,res,next) {
-        res.status(500).send({error: true, message: "Feature not implemented"});
+        //res.status(500).send({error: true, message: "Feature not implemented"});
+        var studentId = req.params.studentId;
 
+        // find requests made by the student and sort from newest to oldest
+        Requests.find({studentId : studentId}).sort({created_at : 'desc'}).exec(function (err, request) {
+            if (err) {
+                console.log(err.message);
+                res.status(500).send({error: true, message: "An internal server error occurred."});
+                return;
+            }
+
+            // if the student has made requests before
+            if (request.length > 0) {
+                // find tutors who teach the topic of the request
+                // sorted by highest to lowest rating
+                Tutors.find({topics : request[0].topicId}).sort({rating : 'desc'}).exec(function (err, tutor) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                        return;
+                    }
+
+                    validTutors = [];
+                    // only push tutors that are not the tutor the newest request was made to
+                    for (i = 0; i < tutor.length; i++) {
+                        if (tutor[i]._id != request[0].tutorId) {
+                            validTutors.push(tutor[i]);
+                        }
+                        if (validTutors.length == 3) {
+                            break;
+                        }
+                    }
+
+                    res.send({error: false, data: validTutors});
+                });
+            }
+        });
     };
 };
 
