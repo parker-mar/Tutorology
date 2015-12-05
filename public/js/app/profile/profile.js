@@ -40,12 +40,13 @@ angular.module('MyApp.profile', ['ngRoute'])
                         $http.get('/api/tutors/'+$routeParams.userId+"/reviews").then(
                             function successCallback(res){
                                 $scope.user.reviews = res.data.data;
+                                console.log($scope.user.reviews);
                                 for(var key in  $scope.user.reviews){
                                     (function(review) {
                                         review.ratingWidth =  25*review.rating;
                                         review.time = Date.parse(review.created_at);
                                         review.time_formatted = $filter('date')(review.time, 'medium');
-                                            $http.get('/api/users/' + review.studentId).then(
+                                            $http.get('/api/users/' + review.studentId._id).then(
                                                 function successCallback(res) {
                                                     review.student = res.data.data;
                                                 },
