@@ -23,8 +23,6 @@ angular.module('MyApp.referrals', ['ngRoute'])
                             		ref.isRead = true;
                             	});
                         });
-                        
-	                    console.log($scope.referrals);
 
 	                });
 
