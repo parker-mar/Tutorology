@@ -103,7 +103,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
             // If actor is tutor get all requests and add attributes 
             // for display.
-            } else if ($rootScope.actor.userType == 'Tutor') {
+            } else if ($rootScope.actor.userType == 'Tutors') {
             	$http.get('/api/tutors/'+ $rootScope.actor._id + '/requests').then(
             		function successCallback(res){
             			$scope.requests = res.data.data;
@@ -114,7 +114,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
                         });
             			$scope.userType = 'Tutors';
             		});
-            } else if ($rootScope.actor.userType == 'Tutor'){
+            } else if ($rootScope.actor.userType == 'Tutors'){
                 $http.get('/api/admin/get-disputes/').then(
                     function successCallback(res){
                         $scope.disputes = res.data.data;
