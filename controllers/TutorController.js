@@ -65,6 +65,8 @@ var TutorController = function(app) {
         }
     };
 
+
+
 //  Gets the tutor
 //  @paramarg {String} tutorId       The ID of the tutor to get.
 //  @returns {Response}              Tutor in the database, populated with profile, topics, reviews,

@@ -96,7 +96,7 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
 
-        Requests.find({studentId : studentId}).populate().exec(function (err, requests) {
+        Requests.find({studentId : studentId}).populate('profile').exec(function (err, requests) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
@@ -279,8 +279,12 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
 
-        Referrals.find({toStudentId : studentId}).populate('fromStudentId').populate('tutorId').exec(function (err, referrals) {
+        Referrals.find({toStudentId : studentId}).populate([
+                    {path: 'fromStudentId'},
+                    {path: 'tutorId'}])
+        .exec(function (err, referrals) {
             if (err) {
+                console.log("Failed HERE");
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
                 return;
