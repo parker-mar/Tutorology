@@ -16,10 +16,8 @@ angular.module('MyApp.request', ['ngRoute'])
 	});
 
 	$scope.topics = [];
-	//$scope.topicID = 1;
+	$scope.topicName = "";
 	$scope.requestMessage = '';
-
-
 
 	if ($rootScope.actor){
 		if ($rootScope.actor.userType === 'Students'){
@@ -38,6 +36,27 @@ angular.module('MyApp.request', ['ngRoute'])
 	}
 
 
+	$scope.sendRequest =  function(tpcName, reqMessage){
+		if (reqMessage === ""){
+
+            console.log("Attempted empty request.");
+            $rootScope.displayAlert('error', "Must provide message in request.");  
+		} else {
+			$http.post('/api/students/'+ $rootScope.actor._id + '/requests', 
+				{tutorId : $routeParams.tutorId, topicName: tpcName, message: reqMessage}).then(
+					function sucessCallback (res){
+						window.location.href = '/#/';
+											
+					}, 				
+
+					 function errorCallback(res){
+		                //trigger error message here.
+		                console.log("Error sending request");
+		                $rootScope.displayAlert('error',res.data.message);
+			        });
+		}
+
+	};
 /*
 	if ($rootScope.actor){
 		if ($rootScope.actor.userType === 'Students'){

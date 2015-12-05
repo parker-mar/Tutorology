@@ -8,7 +8,7 @@ angular.module('MyApp.requests', ['ngRoute'])
         });
 }])
 
-.controller("RequestsController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope) {
+.controller("RequestsController", ['$scope','$http','$rootScope', '$filter', function($scope, $http, $rootScope, $filter) {
 
 	$scope.noResponseClass = 'bg-info';
 	$scope.acceptResponseClass = 'bg-success';
@@ -24,9 +24,12 @@ angular.module('MyApp.requests', ['ngRoute'])
 			$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
 	            function successCallback(res){
 	                    $scope.requests = res.data.data;
+	                    console.log($scope.requests);
 	                    $scope.requests.forEach(function(req){
-	                        req.active = false;
-	                    });
+	                    	req.active = false;
+	                    	req.created_at = $filter('date')(req.created_at, 'medium');
+	                    });	
+
 
 	                });
 
