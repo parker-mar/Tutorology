@@ -166,4 +166,8 @@ angular.module('MyApp.profile', ['ngRoute'])
             )
         }
     };
+
+    $scope.goToRequest = function(){
+        go('/#/request/'+ $routeParams.userId);
+    }
 }]);
