@@ -67,8 +67,8 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         window.location.href = '/#/search'
     };
 
-    $scope.adminAnalytics = function (){
-        window.location.href = '/#/analytics'
+    $scope.adminPanel = function (){
+        window.location.href = '/#/admin'
     };
 
     // send a response for request.

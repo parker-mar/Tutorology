@@ -1,25 +1,28 @@
-<ul ng-if="(actor.authorization=='Admin') || (actor.authorization =='SAdmin')" class="nav nav-pills nav-justified">
-    <li class="active"><a href="/#/home">Home</a></li>
-    <li><a href="/#/analytics">Analytics</a></li>
-</ul>
-<div class="row">
-    <div class="col-xs-12">
-        <h2>Welcome {{(actor.displayName)?actor.displayName:actor.email}} !</h2>
-        <div class="table-responsive">
-            <table class="table table-hover table-adjusted">
-                <thead>
-                <tr>
-                    <th>User Email</th>
-                    <th>Display Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="user in users" ng-click="clicking(user)">
-                        <td>{{user.email}}</td>
-                        <td>{{(user.displayName)?user.displayName:user.email}}</td>
+<div ng-if="(actor.authorization=='Admin') || (actor.authorization =='SAdmin')">
+
+    <ul  class="nav nav-pills nav-justified">
+        <li class="active"><a href="/#/home">Home</a></li>
+        <li><a href="/#/analytics">Analytics</a></li>
+    </ul>
+    <div class="row">
+        <div class="col-xs-12">
+            <h2>Welcome {{(actor.displayName)?actor.displayName:actor.email}} !</h2>
+            <div class="table-responsive">
+                <table class="table table-hover table-adjusted">
+                    <thead>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Display Name</th>
                     </tr>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in users" ng-click="clicking(user)">
+                            <td>{{user.email}}</td>
+                            <td>{{(user.displayName)?user.displayName:user.email}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

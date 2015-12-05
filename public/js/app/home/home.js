@@ -5,13 +5,13 @@ angular.module('MyApp.home', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-        .when('/home', {
+        .when('/admin', {
             templateUrl: 'js/app/home/home.html',
-            controller: 'HomeController'
+            controller: 'AdminController'
         });
 }])
 
-.controller("HomeController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope) {
+.controller("AdminController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope) {
     $scope.users = [];
     $scope.clicking = function (user){
         window.location.href = '/#/users/'+user._id+'/profile';
@@ -22,6 +22,9 @@ angular.module('MyApp.home', ['ngRoute'])
         function successCallback(res){
             $rootScope.actor = res.data.data;
 
+            if ($rootScope.actor.authorization === 'User') {
+                window.location.href = '/#/';
+            }
             // Gets all the users in the database
             $http.get('/api/users').then(
                 function successCallback(res){

@@ -1,89 +1,95 @@
-<h2>Analytics</h2>
-<div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Most Profile Views</div>
-    <!--<div class="panel-body">-->
-    <!--</div>-->
+<div ng-if="(actor.authorization=='Admin') || (actor.authorization =='SAdmin')">
+    <ul class="nav nav-pills nav-justified">
+        <li><a href="/#/admin">Admin Panel</a></li>
+        <li class="active"><a href="/#/analytics">Analytics</a></li>
+    </ul>
+    <h2>Analytics</h2>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Most Profile Views</div>
+        <!--<div class="panel-body">-->
+        <!--</div>-->
 
-    <!-- Table -->
-    <table class="table table-adjusted">
-        <thead>
-        <tr>
-            <th>User</th>
-            <th>Views</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="userView in userViews | orderBy:'-count'">
-            <td>{{(userView.displayName)?userView.displayName:userView.email}}</td>
-            <td>{{userView.count}}</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Devices Used</div>
-    <!--<div class="panel-body">-->
-    <!--</div>-->
-
-    <!-- Table -->
-    <table class="table table-adjusted">
-        <thead>
+        <!-- Table -->
+        <table class="table table-adjusted">
+            <thead>
             <tr>
-                <th>Device</th>
-                <th>Percentage</th>
+                <th>User</th>
+                <th>Views</th>
             </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="device in devices | orderBy:'-count'">
-                <td>{{device.device}}</td>
-                <td>{{device.count/totalDeviceCount*100}}%</td>
+            </thead>
+            <tbody>
+            <tr ng-repeat="userView in userViews | orderBy:'-count'">
+                <td>{{(userView.displayName)?userView.displayName:userView.email}}</td>
+                <td>{{userView.count}}</td>
             </tr>
-        </tbody>
-    </table>
-</div>
-<div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Browsers Used</div>
-    <!--<div class="panel-body">-->
-    <!--</div>-->
+            </tbody>
+        </table>
+    </div>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Devices Used</div>
+        <!--<div class="panel-body">-->
+        <!--</div>-->
 
-    <!-- Table -->
-    <table class="table table-adjusted">
-        <thead>
-            <tr>
-                <th>Browser</th>
-                <th>Percentage</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="browser in browsers | orderBy:'-count'">
-                <td>{{browser.browser}}</td>
-                <td>{{browser.count/totalBrowserCount*100}}%</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="panel panel-default">
-    <!-- Default panel contents -->
-    <div class="panel-heading">Operating Systems Used</div>
-    <!--<div class="panel-body">-->
-    <!--</div>-->
+        <!-- Table -->
+        <table class="table table-adjusted">
+            <thead>
+                <tr>
+                    <th>Device</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="device in devices | orderBy:'-count'">
+                    <td>{{device.device}}</td>
+                    <td>{{device.count/totalDeviceCount*100}}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Browsers Used</div>
+        <!--<div class="panel-body">-->
+        <!--</div>-->
 
-    <!-- Table -->
-    <table class="table table-adjusted">
-        <thead>
-            <tr>
-                <th>Operating System</th>
-                <th>Percentage</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="operatingSystem in operatingSystems | orderBy:'-count'">
-                <td>{{operatingSystem.os}}</td>
-                <td>{{operatingSystem.count/totalOSCount*100}}%</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- Table -->
+        <table class="table table-adjusted">
+            <thead>
+                <tr>
+                    <th>Browser</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="browser in browsers | orderBy:'-count'">
+                    <td>{{browser.browser}}</td>
+                    <td>{{browser.count/totalBrowserCount*100}}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Operating Systems Used</div>
+        <!--<div class="panel-body">-->
+        <!--</div>-->
+
+        <!-- Table -->
+        <table class="table table-adjusted">
+            <thead>
+                <tr>
+                    <th>Operating System</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="operatingSystem in operatingSystems | orderBy:'-count'">
+                    <td>{{operatingSystem.os}}</td>
+                    <td>{{operatingSystem.count/totalOSCount*100}}%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
