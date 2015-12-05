@@ -74,7 +74,6 @@ angular.module('MyApp.dashboard', ['ngRoute'])
     // send a response for request.
     $scope.sendRequest =  function (req, accpt, message){
         // Check if already has responses
-        console.log({accepted: accpt, response: message});
         if (!req.hasResponse){
             $http.put('/api/tutors/' + $rootScope.actor._id + '/requests/' + req._id
                 ,{accepted: accpt, response: message}).then(                   

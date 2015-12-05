@@ -17,29 +17,40 @@ angular.module('MyApp.requests', ['ngRoute'])
 	$scope.panelClick = function (panel){
         panel.active = !panel.active;
     };
+	
+	
+	$http.get('/api/actor').then(
+        function successCallback(res){
+            $rootScope.actor = res.data.data;
+			if ($rootScope.actor.userType === 'Students'){
+				$scope.userType = $rootScope.actor.userType;
+				$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
+		            function successCallback(res){
+		                    $scope.requests = res.data.data;
+		                    console.log($scope.requests);
+		                    $scope.requests.forEach(function(req){
+		                    	req.active = false;
+		                    	req.created_at = $filter('date')(req.created_at, 'medium');
+		                    });	
+		                }, function errorCallback(res){	
+							            //trigger error message here.
+						        console.log("Failed getting requests.");
+						        $rootScope.displayAlert('error',res.data.message);
+								
+							});
+	
+			} else {
+				window.location.href = '/#/';
+			}
+	}, function errorCallback(res){	
+	            //trigger error message here.
+        console.log("Failed getting actor.");
+        $rootScope.displayAlert('error',res.data.message);
+		
+	});
 
-	if ($rootScope.actor){
-		if ($rootScope.actor.userType === 'Students'){
-			$scope.userType = $rootScope.actor.userType;
-			$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
-	            function successCallback(res){
-	                    $scope.requests = res.data.data;
-	                    console.log($scope.requests);
-	                    $scope.requests.forEach(function(req){
-	                    	req.active = false;
-	                    	req.created_at = $filter('date')(req.created_at, 'medium');
-	                    });	
+	
 
-
-	                });
-
-		} else {
-			window.location.href = '/#/';
-		}
-
-	} else {
-		window.location.href = '/#/';
-	}
 
 
 }]);

@@ -19,21 +19,30 @@ angular.module('MyApp.request', ['ngRoute'])
 	$scope.topicName = "";
 	$scope.requestMessage = '';
 
-	if ($rootScope.actor){
-		if ($rootScope.actor.userType === 'Students'){
-			$scope.userType = $rootScope.actor.userType;
-			$http.get("/api/tutors/" + $routeParams.tutorId).then(function sucessCallback (res){
-				$scope.tutor = res.data.data;
-					
-			});
+	
+	$http.get('/api/actor').then(
+        function successCallback(res){
+            $rootScope.actor = res.data.data;
+			if ($rootScope.actor.userType === 'Students'){
+				$scope.userType = $rootScope.actor.userType;
+				$http.get("/api/tutors/" + $routeParams.tutorId).then(function sucessCallback (res){
+					$scope.tutor = res.data.data;
+						
+				},  function errorCallback(res){
+	                //trigger error message here.
+	                console.log("Error getting tutor");
+	                $rootScope.displayAlert('error',res.data.message);
+		        });
+	
+			} else {
+				window.location.href = '/#/';
+			}
+		},  function errorCallback(res){
+	                //trigger error message here.
+	                console.log("Error getting actor");
+	                $rootScope.displayAlert('error',res.data.message);
+		    });
 
-		} else {
-			window.location.href = '/#/';
-		}
-
-	} else {
-		window.location.href = '/#/';
-	}
 
 
 	$scope.sendRequest =  function(tpcName, reqMessage){
