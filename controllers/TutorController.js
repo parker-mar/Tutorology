@@ -58,7 +58,7 @@ var TutorController = function(app) {
                             res.status(500).send({error: true, message: "An internal server error occurred."});
                             return;
                         }
-
+                        console.log(tutors);
                         res.send({error: false, data: tutors});
                     });
             });
@@ -357,6 +357,29 @@ var TutorController = function(app) {
 
             res.send({error: false, data: review});
         });
+    };
+
+    this.getDisputes = function (req, res, next) {
+
+        Reviews
+            .find({flagged: true})
+            .sort({'created_at': 1})
+            .populate([
+                {path: 'studentId', populate:
+                    {path: 'profile'}},
+                {path: 'tutorId', populate:
+                    {path: 'profile'}}])
+            .exec(function (err, reviews){
+                if (err) {
+                    console.log(err.message);
+                    res.status(500).send({error: true, message: "An internal server error occurred."});
+                    return;
+                }
+
+                console.log(reviews);
+                res.send({error: false, data: reviews});
+        });
+
     };
 
 };

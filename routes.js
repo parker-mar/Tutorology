@@ -92,6 +92,7 @@ module.exports = function(app) {
     app.delete(root+'tutors/:tutorId/reviews/:reviewId',
         securityGate.checkIfUserIsAdmin, tutorController.removeReview);
 
+    app.get(root+'get-disputes', tutorController.getDisputes);
     // Student Routes
     app.get(root+'students',
         securityGate.checkIfUserIsSignedIn, studentController.getStudents);
@@ -116,6 +117,7 @@ module.exports = function(app) {
 
     app.get(root+'students/:studentId/recommendations',
         securityGate.checkIfUserIsSignedIn, studentController.getRecommendations);
+
 
     // Other User Routes
     app.get(root+'actor',
