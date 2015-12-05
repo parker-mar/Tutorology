@@ -88,7 +88,7 @@ angular.module('MyApp.profile', ['ngRoute'])
         if($scope.newReview.message.length > 500) {
             $rootScope.displayAlert("error", "Error: Description text exceeds maximum length of 500.");
         } else if($scope.newReview.rating < 0 ||$scope.newReview.rating > 5 || isNaN($scope.newReview.rating)){
-            $rootScope.displayAlert("error","Error: Rate must be between 0 and 5.");
+            $rootScope.displayAlert("error","Error: Rating must be between 0 and 5.");
         } else {
             $http.post('/api/students/' + $rootScope.actor._id + "/reviews", $scope.newReview).then(
                 function successCallback(res) {

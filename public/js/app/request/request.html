@@ -4,15 +4,15 @@
 			 <h1> Request for <a ng-href="/#/users/{{tutor._id}}/profile">{{tutor.displayName}}</a> </h1> 
 
 	        <select ng-model="topicName" class="form-control">
-            	<option ng-repeat="topic in tutor.topics" ng-value="topic.name" ng-bind="topic.name"> </option>
+            	<option ng-repeat="topic in tutor.topics" ng-value="topic.name" ng-bind="topic.name" placeholder="Topic"> </option>
         	</select>
 
              <div class="form-group">
                 <label for="comment">Request:</label>
-                <textarea ng-model="requestMessage"  class="form-control" rows="3"></textarea>
+                <textarea ng-model="requestMessage"  class="form-control" rows="3" placeholder="Message"></textarea>
             </div>
 
-            <button class="btn btn-success" ng-click="sendRequest(topicName, requestMessage)"> 
+            <button class="btn btn-primary" ng-click="sendRequest(topicName, requestMessage)">
             	Submit Request
             </button>
 
