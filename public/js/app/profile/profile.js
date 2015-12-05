@@ -46,7 +46,7 @@ angular.module('MyApp.profile', ['ngRoute'])
                                         review.ratingWidth =  25*review.rating;
                                         review.time = Date.parse(review.created_at);
                                         review.time_formatted = $filter('date')(review.time, 'medium');
-                                            $http.get('/api/users/' + review.studentId._id).then(
+                                            $http.get('/api/users/' + review.studentId).then(
                                                 function successCallback(res) {
                                                     review.student = res.data.data;
                                                 },
