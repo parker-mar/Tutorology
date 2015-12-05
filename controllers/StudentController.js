@@ -8,6 +8,7 @@ var StudentController = function(app) {
     var Topics = app.models.Topics;
     var Requests = app.models.Requests;
     var Reviews = app.models.Reviews;
+    var Users = app.models.Users;
     var Referrals = app.models.Referrals;
     var activityLogger = app.activityLogger;
 
@@ -95,7 +96,7 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
 
-        Requests.find({studentId : studentId}).exec(function (err, requests) {
+        Requests.find({studentId : studentId}).populate().exec(function (err, requests) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
@@ -346,7 +347,11 @@ var StudentController = function(app) {
     this.getRecommendations = function (req,res,next) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
-
+        console.log("Student Id of request");
+        console.log(studentId);
+        Requests.find({}).exec(function (err, request) {
+            console.log(request);
+        });
         // find requests made by the student and sort from newest to oldest
         Requests.find({studentId : studentId}).sort({created_at : 'desc'}).exec(function (err, request) {
             if (err) {
@@ -354,6 +359,8 @@ var StudentController = function(app) {
                 res.status(500).send({error: true, message: "An internal server error occurred."});
                 return;
             }
+
+            console.log(request);
 
             // if the student has made requests before
             if (request.length > 0) {
@@ -379,6 +386,21 @@ var StudentController = function(app) {
 
                     res.send({error: false, data: validTutors});
                 });
+            } else {
+                console.log("No requests Made.");
+                Tutors.find({}, Tutors.defaultFilter).sort({rating : 'desc'}).populate([
+                    {path: 'profile'},
+                    {path: 'topics', options: {sort: {name: 1}}}]).exec(function (err, tutors) {
+                    if (err) {
+                        console.log(err.message);
+                        res.status(500).send({error: true, message: "An internal server error occurred."});
+                        return;
+                    }
+
+                    res.send({error: false, data: tutors});
+                });
+
+
             }
         });
     };
