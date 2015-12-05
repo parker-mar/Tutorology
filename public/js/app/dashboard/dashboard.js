@@ -2,7 +2,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-        .when('/', {
+        .when('/dashboard', {
             templateUrl: 'js/app/dashboard/dashboard.html',
             controller: 'DashController'
         });

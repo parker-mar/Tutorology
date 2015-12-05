@@ -15,7 +15,7 @@ angular.module('MyApp.landing', ['ngRoute'])
     // Redirects to the home page if user is already logged in.
     $http.get('/api/actor').then(
         function successCallback(res){
-            window.location.href = '/#/home';
+            window.location.href = '/#/dashboard';
         },
         function errorCallback(res){
             //trigger error message here.
