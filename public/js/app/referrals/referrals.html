@@ -1,0 +1,20 @@
+<div ng-if="userType == 'Students'">
+        <center ng-if="referrals.length == 0"><h4>No Referrals</h4></center>
+        <div ng-repeat="ref in referrals">
+            <div class="panel panel-default" >
+                <div class="panel-body bg-success" ng-class="noResponseClass">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span>From: {{ref.fromStudentId.displayName}}</span>
+                            <span>Sent: {{ref.created_at}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <a ng-href="/users/{{ref.tutorId._id}}/profile">
+                      <div>Tutor: {{ref.TutorId.displayName}} </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
