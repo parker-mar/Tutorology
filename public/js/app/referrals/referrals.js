@@ -7,7 +7,7 @@ angular.module('MyApp.referrals', ['ngRoute'])
             controller: 'ReferralsController'
         });
 }])
-.controller("ReferralsController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope) {
+.controller("ReferralsController", ['$scope','$http','$rootScope', '$filter', function($scope, $http, $rootScope, $filter) {
 
 
 	if ($rootScope.actor){
@@ -18,6 +18,7 @@ angular.module('MyApp.referrals', ['ngRoute'])
 	            		
 	                    $scope.referrals = res.data.data;
 	                   	$scope.referrals.forEach(function(ref){
+	                   		ref.created_at = $filter('date')(ref.created_at, 'medium');
                             $http.put("/api/students/"+  $rootScope.actor._id + "/referrals/" + ref._id, {isRead: true}).then(
                             	function successCallback(res){
                             		ref.isRead = true;
