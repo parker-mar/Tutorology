@@ -2,7 +2,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
     $routeProvider
-        .when('/dash', {
+        .when('/', {
             templateUrl: 'js/app/dashboard/dashboard.html',
             controller: 'DashController'
         });
@@ -140,14 +140,18 @@ angular.module('MyApp.dashboard', ['ngRoute'])
                             req.created_at = $filter('date')(req.created_at, 'medium');
                         });
             			$scope.userType = 'Tutors';
-            		});
+    		          },   function errorCallback(res){
+                        //trigger error message here.
+                        console.log("Error getting Tutors.");
+                        $rootScope.displayAlert('error',res.data.message);
+                    });
             }  
         },
 
         function errorCallback(res){
             //trigger error message here.
             console.log("Error getting Actor");
-            $rootScope.displayAlert('error',res.data.message);
+            window.location.href = '/#/login';
         });
 
 

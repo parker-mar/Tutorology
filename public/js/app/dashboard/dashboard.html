@@ -110,7 +110,7 @@
         <br>
         <center style="margin-top: 40px" ng-if="disputes.length == 0"><h4>No Review Disputes Found.</h4></center>
         <div ng-repeat="dispute in disputes">
-            <div class="panel panel-default bg-warning">
+            <div class="panel panel-default bg-warning" style="margin-top: 50px">
                 <div class="panel-body bg-info" ng-click='panelClick(dispute)'>
                     <div>
                         <span>Name: <a ng-href="/#/users/{{dispute.studentId._id}}/profile"> {{dispute.studentId.displayName}}</a></span>

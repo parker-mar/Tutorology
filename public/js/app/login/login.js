@@ -17,7 +17,7 @@ angular.module('MyApp.login', ['ngRoute'])
     // Redirects to the home page if the user is already logged in.
     $http.get('/api/actor').then(
         function successCallback(res){
-            window.location.href = '/#/home';
+            window.location.href = '/#/';
         },
         function errorCallback(res){
             //trigger error message here.
@@ -28,7 +28,7 @@ angular.module('MyApp.login', ['ngRoute'])
     $scope.login = function (){
         $http.post('/api/login',$scope.loginInfo).then(
             function successCallback(res){
-                window.location.href = '/#/home';
+                window.location.href = '/#/';
             },
             function errorCallback(res){
                 //trigger error message here.
