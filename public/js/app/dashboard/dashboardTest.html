@@ -1,6 +1,6 @@
-<div>
+<div ng-controller='DashController'>
 
-    <div ng-if="userType == 'Students'" class="container">
+    <div ng-if="userType == 'Student'" class="container">
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="studentRequests()" style="width: 100%">
@@ -18,113 +18,112 @@
             <div class="col-lg-12">
                 <div class="input-group">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" ng-click="searchTopic(searchTerm)" type="button">Search</button>
+                        <button class="btn btn-default" ng-click="searchTopic()" type="button">Search</button>
                     </span>
                     <input ng-model="searchTerm" type="text" class="form-control" placeholder="Search for Topics">
                 </div><!-- /input-group -->
             </div><!-- /.col-lg-6 -->
         </div>
 
-        <center ng-if="tutors.length == 0"><h4>No Tutors Found.</h4></center>
         <div ng-repeat="tutor in tutors">
-            <a ng-href="/#/users/{{tutor._id}}/profile">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <div class="Row">
-                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                                <img ng-src="{{(tutor.profile.image)?tutor.profile.image:'/img/default-profile.jpg'}}" style="width: 100%; height:100%; max-width: 75px; max-height: 75px"></img>
-                            </div>
-                            <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                                <span>Name: {{tutor.displayName ? tutor.displayName : noDisplayName}} </span>
-                                <br>
-                                <span>Topics: {{tutor.topicStr != '' ? tutor.topicStr : noTopic }} </span>
-                            </div> 
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <img src="tutor.image"></img>
                         </div>
+                        <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                            <span>Name: {{tutor.name}} </span>
+                            <br>
+                            <span>Topics: {{tutor.topicStr}} </span>
+                        </div> 
+                    </div>
 
-                        <div class="Row">
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                                <span>Rating: {{tutor.rating ? tutor.rating : noRating}} </span>
-                            </div>
-                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
-                                <span> Description: {{tutor.description ? tutor.description :  noDescription}} </span>
-                            </div>
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                            <span> {{tutor.rating}} </span>
+                        </div>
+                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
+                            <span> Description: {{tutor.decription}} </span>
                         </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
-    </div>
+        </div>
 
-
-    <div ng-if="userType == 'Tutors'">
+    <div ng-if="userType == 'Tutor'">
         <center><h4> Click to read requests</h4></center>
-        <div ng-repeat="req in requests">
+        <div ng-if="userType == 'Tutor'" ng-repeat="req in requests">
             <div class="panel panel-default" >
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
                     <div class="Row">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <span ng-bind="req.topicId.name"></span>
-                            <span ng-bind="req.studentId.displayName"></span>
-                            <span ng-bind="req.created_at"></span>
+                            <span ng-bind="req.topic"></span>
+                            <span ng-bind="req.name"></span>
+                            <span ng-bind="req.time"></span>
                         </div>
                     </div>
                 </div>
                 <div ng-if="req.active" class="panel-footer">
                     <div ng-if="!req.hasResponse" class="input-group" style="margin-bottom: 20px">
                         <label class="radio-inline">
-                            <input name="{{req.studentId.displayName}" type="radio" checked ng-model="req.accepted" ng-value="true">
+                            <input name="{{req.studentName}}" type="radio" checked ng-model="req.response" ng-value="true">
                             Accept
                         </label>
                         <label class="radio-inline">
-                            <input name="{{req.studentId.displayName}}" type="radio" ng-model="req.accepted" ng-value="false">
+                            <input name="{{req.studentName}}" type="radio" ng-model="req.response" ng-value="false">
                             Deny
                         </label>
-                        <button class="btn btn-primary btn-lg" ng-click="sendRequest(req, req.accepted, req.resMessage)" type="button">
+                        <button class="btn btn-primary btn-lg" ng-click="sendRequest(req)" type="button">
                             Respond
                         </button>
                     </div>
 
                      <div class="form-group">
                           <label for="comment">Request:</label>
-                          <textarea class="form-control" rows="3" ng-bind="req.message" disabled></textarea>
+                          <textarea class="form-control" rows="3" disabled></textarea>
                     </div>
 
-                     <div ng-if="!req.hasResponse || req.accepted" class="form-group">
+                     <div ng-if="!req.hasResponse || req.accepted" ng-disabled="req.hasResponse" class="form-group">
                           <label for="comment">Response:</label>
-                          <textarea ng-model="req.resMessage" ng-disabled="req.hasResponse" class="form-control" rows="3"></textarea>
+                          <textarea ng-model="req.resMessage" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-
-    <div ng-if="userType == 'Admins'">
-        <div class="Row" >
-            <div class="col-lg-12">
+    <div ng-if="userType == 'Admin'">
+        <div class="Row" style="margin-bottom: 50px">
+            <div class="col-lg-6">
+                <button class="btn btn-primary" ng-click="goToSearch()" style="width: 100%">
+                    Search
+                </button>
+            </div>
+            <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="adminAnalytics()" style="width: 100%">
                     Analytics 
                 </button>
             </div>
         </div>
-        <br>
-        <center style="margin-top: 40px" ng-if="disputes.length == 0"><h4>No Review Disputes Found.</h4></center>
         <div ng-repeat="dispute in disputes">
             <div class="panel panel-default bg-warning">
                 <div class="panel-body bg-info" ng-click='panelClick(dispute)'>
                     <div>
-                        <span>Name: <a ng-href="/#/users/{{dispute.studentId._id}}/profile"> {{dispute.studentId.displayName}}</a></span>
+                        <span>Name: {{dispute.studentName}}</span>
                         <span>Rating: {{dispute.rating}}</span>
                     </div>
                     <div>
                         <span> 
-                            {{dispute.message}}
+                            {{dispute.review}}
                         </span>
                     </div>
                 </div>
                 <div ng-if="dispute.active" class="panel-footer" style="padding-bottom: 50px">
-                    <div>Complaint From: <a ng-href="/#/users/{{dispute.tutorId._id}}/profile">{{dispute.tutorId.displayName}}</a></div>
-                    <div>{{dispute.reason}}</div>
+                    <div>Complaint From: {{dispute.tutorName}}</div>
+                    <div>{{dispute.message}}</div>
                     <div class="Row" style="margin-top: 50px">
                         <div class="col-lg-6">
                             <button class="btn btn-success" ng-click="disputeIgnore(dispute)" style="width: 100%">
@@ -142,3 +141,12 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+

@@ -13,7 +13,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
     //       --> LIVE testing
     //       --> add link to tutor profile form student dash. 
 
-	$scope.searchTerm = "";
+	//$scope.searchTerm = "";
 
 	$scope.noResponseClass = 'bg-info';
 	$scope.acceptResponseClass = 'bg-success';
@@ -27,11 +27,17 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         panel.active = !panel.active;
     };
 
-    $scope.searchTopic =  function (){
+    $scope.searchTopic =  function (searchTerm ){
         ///api/tutors/:tutorId/reviews/:reviewId
-        $http.post('/api/get-tutors', {topicName: $scope.searchTerm}).then(
+        $http.post('/api/get-tutors', {topicName: searchTerm}).then(
             function successCallback(res){
                     $scope.tutors = res.data.data;
+                    $scope.tutors.forEach(function(tutor){
+                        tutor.topicStr = "";
+                        tutor.topics.forEach(function(topic){
+                            tutor.topicStr += (topic.name + ", ");
+                        })
+                    });
                 });
     };
 
@@ -66,14 +72,21 @@ angular.module('MyApp.dashboard', ['ngRoute'])
     };
 
     // send a response for request.
-    $scope.sendRequest =  function (req){
+    $scope.sendRequest =  function (req, accpt, message){
         // Check if already has responses
+        console.log({accepted: accpt, response: message});
         if (!req.hasResponse){
-            $http.put('/api/' + $rootScope.actor._id + '/requests/' + req._id
-                ,{accepted: req.response, response: req.resMessage}).then(                   
+            $http.put('/api/tutors/' + $rootScope.actor._id + '/requests/' + req._id
+                ,{accepted: accpt, response: message}).then(                   
                 function successCallback(res){
                         req.hasResponse = true;
-                        req.accepted = req.response;
+                        req.accepted = req.accpt;
+                    },
+
+                    function errorCallback(res){
+                        //trigger error message here.
+                        console.log("Error Searching for Tutors By Topic");
+                        $rootScope.displayAlert('error',res.data.message);
                     });
         }
     };
@@ -82,11 +95,25 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         function successCallback(res){
             $rootScope.actor = res.data.data;
             // If actor is student default response is to send reconmmended Tutors
-            if ($rootScope.actor.userType == 'Students'){
+            console.log($rootScope.actor);
+            if ($rootScope.actor.authorization == 'SAdmin'){
+                $http.get('/api/get-disputes/').then(
+                    function successCallback(res){
+                        $scope.disputes = res.data.data;
+                        $scope.disputes.forEach(function(dispute){
+                            dispute.active = false;
+                        });
+                        $scope.userType = 'Admins';
+                    },   function errorCallback(res){
+                                //trigger error message here.
+                                console.log("Failed Getting the Disputes");
+                                $rootScope.displayAlert('error',res.data.message);
+                            });
+            
+            } else if ($rootScope.actor.userType == 'Students'){
             	$http.get('/api/students/' + $rootScope.actor._id + '/recommendations').then(
             		function successCallback(res){
             			$scope.tutors = res.data.data;
-                        console.log($scope.tutors);
                         $scope.tutors.forEach(function(tutor){
                             tutor.topicStr = "";
                             tutor.topics.forEach(function(topic){
@@ -114,15 +141,13 @@ angular.module('MyApp.dashboard', ['ngRoute'])
                         });
             			$scope.userType = 'Tutors';
             		});
-            } else if ($rootScope.actor.userType == 'Tutors'){
-                $http.get('/api/admin/get-disputes/').then(
-                    function successCallback(res){
-                        $scope.disputes = res.data.data;
-                        $scope.disputes.forEach(function(dispute){
-                            dispute.active = false;
-                        });
-                    });
-            }
+            }  
+        },
+
+        function errorCallback(res){
+            //trigger error message here.
+            console.log("Error getting Actor");
+            $rootScope.displayAlert('error',res.data.message);
         });
 
 
