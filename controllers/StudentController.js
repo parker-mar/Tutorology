@@ -96,7 +96,10 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
 
-        Requests.find({studentId : studentId}).populate('profile').exec(function (err, requests) {
+        Requests.find({studentId : studentId}).populate([
+                    {path: 'topicId', options: {sort: {name: 1}}},
+                    {path: 'studentId'},
+                    {path: 'tutorId'}]).exec(function (err, requests) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
@@ -258,7 +261,7 @@ var StudentController = function(app) {
                 fromStudentId : fromStudentId,
                 toStudentId : student._id,
                 tutorId : tutorId,
-                message : (message ? "" : message),
+                message : (message ? message : ""),
                 isRead : false
             };
 
@@ -370,7 +373,9 @@ var StudentController = function(app) {
             if (request.length > 0) {
                 // find tutors who teach the topic of the request
                 // sorted by highest to lowest rating
-                Tutors.find({topics : request[0].topicId}).sort({rating : 'desc'}).exec(function (err, tutor) {
+                Tutors.find({topics : request[0].topicId}).sort({rating : 'desc'}).populate([
+                    {path: 'profile'},
+                    {path: 'topics', options: {sort: {name: 1}}}]).exec(function (err, tutor) {
                     if (err) {
                         console.log(err.message);
                         res.status(500).send({error: true, message: "An internal server error occurred."});
