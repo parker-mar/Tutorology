@@ -1,6 +1,6 @@
 <div>
 
-    <div ng-if="userType == 'Student'" class="container">
+    <div ng-if="userType == 'Students'" class="container">
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="studentRequests()" style="width: 100%">
@@ -33,7 +33,7 @@
                             <img src="tutor.image"></img>
                         </div>
                         <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                            <span>Name: {{tutor.name}} </span>
+                            <span>Name: {{tutor.displayName}} </span>
                             <br>
                             <span>Topics: {{tutor.topicStr}} </span>
                         </div> 
@@ -50,29 +50,30 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 
-    <div ng-if="userType == 'Tutor'">
+
+    <div ng-if="userType == 'Tutors'">
         <center><h4> Click to read requests</h4></center>
-        <div ng-if="userType == 'Tutor'" ng-repeat="req in requests">
+        <div ng-repeat="req in requests">
             <div class="panel panel-default" >
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
                     <div class="Row">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <span ng-bind="req.topic"></span>
-                            <span ng-bind="req.name"></span>
-                            <span ng-bind="req.time"></span>
+                            <span ng-bind="req.Topic.name"></span>
+                            <span ng-bind="req.Student.name"></span>
+                            <span ng-bind="req.created_at"></span>
                         </div>
                     </div>
                 </div>
                 <div ng-if="req.active" class="panel-footer">
                     <div ng-if="!req.hasResponse" class="input-group" style="margin-bottom: 20px">
                         <label class="radio-inline">
-                            <input name="{{req.studentName}}" type="radio" checked ng-model="req.response" ng-value="true">
+                            <input name="{{req.studentName}}" type="radio" checked ng-model="req.accepted" ng-value="true">
                             Accept
                         </label>
                         <label class="radio-inline">
-                            <input name="{{req.studentName}}" type="radio" ng-model="req.response" ng-value="false">
+                            <input name="{{req.studentName}}" type="radio" ng-model="req.accepted" ng-value="false">
                             Deny
                         </label>
                         <button class="btn btn-primary btn-lg" ng-click="sendRequest(req)" type="button">
@@ -85,17 +86,17 @@
                           <textarea class="form-control" rows="3" ng-bind="req.reqMessage" disabled></textarea>
                     </div>
 
-                     <div ng-if="!req.hasResponse || req.accepted" ng-disabled="req.hasResponse" class="form-group">
+                     <div ng-if="!req.hasResponse || req.accepted" class="form-group">
                           <label for="comment">Response:</label>
-                          <textarea ng-model="req.resMessage" class="form-control" rows="3"></textarea>
+                          <textarea ng-model="req.resMessage" ng-disabled="req.hasResponse" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <div ng-if="userType == 'Admin'">
+
+    <div ng-if="userType == 'Admins'">
         <div class="Row" style="margin-bottom: 50px">
             <div class="col-lg-6">
                 <button class="btn btn-primary" ng-click="goToSearch()" style="width: 100%">

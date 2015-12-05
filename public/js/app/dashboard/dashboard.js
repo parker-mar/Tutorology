@@ -17,7 +17,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
 	$scope.noResponseClass = 'bg-info';
 	$scope.acceptResponseClass = 'bg-success';
-	$scope.denyResponseClass = 'bg-danger'
+	$scope.denyResponseClass = 'bg-danger';
 
     $scope.panelClick = function (panel){
         panel.active = !panel.active;
@@ -25,7 +25,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
     $scope.searchTopic =  function (){
         ///api/tutors/:tutorId/reviews/:reviewId
-        $http.get('/api/getTutors/topic/' + $scope.searchTerm.trim()).then(
+        $http.post('/api/get-tutors', {topicName: $scope.searchTerm}).then(
             function successCallback(res){
                     $scope.tutors = res.data.data;
                 });
@@ -63,14 +63,13 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
     // send a response for request.
     $scope.sendRequest =  function (req){
-        req.hasResponse = true;
-        req.accepted = true;
         // Check if already has responses
         if (!req.hasResponse){
             $http.put('/api/' + $rootScope.actor._id + '/requests/' + req._id
-                ,{response: req.response, message: req.resMessage}).then(                   
+                ,{accepted: req.response, response: req.resMessage}).then(                   
                 function successCallback(res){
                         req.hasResponse = true;
+                        req.accepted = req.response;
                     });
         }
     };
@@ -83,17 +82,28 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
 	$http.get('/api/actor').then(
         function successCallback(res){
+            console.log("TEST1");
             $rootScope.actor = res.data.data;
+            console.log($rootScope.actor);
             // If actor is student default response is to send reconmmended Tutors
-            if ($rootScope.actor.userType == 'Student'){
-            	$http.get('/api/students/' + $rootScope.actor._id + '/getRecommendedTutors/').then(
+            if ($rootScope.actor.userType == 'Students'){
+                console.log("TEST1.5");
+            	$http.get('/api/students/' + $rootScope.actor._id + '/recommendations').then(
             		function successCallback(res){
+                        console.log("TEST2");
             			$scope.tutors = res.data.data;
+                        console.log($scope.tutors);
+                        console.log("TEST3");
                         $scope.tutors.forEach(function(tutor){
-                            tutor.topicStr = tutor.topics.join([separator = ',']);
+                            //tutor.topicStr = tutor.topics.join([separator = ',']);
                         });
             			$scope.userType = 'Student';
-            		});
+            		},
+                            function errorCallback(res){
+                                //trigger error message here.
+                                console.log("Update Error");
+                                $rootScope.displayAlert('error',res.data.message);
+                            });
 
             // If actor is tutor get all requests and add attributes 
             // for display.
@@ -104,8 +114,6 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
                         $scope.requests.forEach(function(req){
                             req.active = false;
-                            req.response = false;
-                            req.resMessage = "";
                         });
             			$scope.userType = 'Tutor';
             		});

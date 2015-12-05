@@ -1,0 +1,27 @@
+<div ng-if="userType == 'Students'">
+        <center><h4> Click to read requests</h4></center>
+        <div ng-repeat="req in requests">
+            <div class="panel panel-default" >
+                <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
+                    <div class="Row">
+                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                            <span ng-bind="req.Topic.name"></span>
+                            <span ng-bind="req.Student.name"></span>
+                            <span ng-bind="req.created_at"></span>
+                        </div>
+                    </div>
+                </div>
+                <div ng-if="req.active" class="panel-footer">
+                     <div class="form-group">
+                          <label for="comment">Request:</label>
+                          <textarea class="form-control" rows="3" ng-bind="req.reqMessage" disabled></textarea>
+                    </div>
+
+                     <div ng-if="!req.hasResponse || req.accepted" class="form-group">
+                          <label for="comment">Response:</label>
+                          <textarea ng-model="req.resMessage" disabled class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

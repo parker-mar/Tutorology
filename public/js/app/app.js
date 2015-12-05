@@ -12,7 +12,8 @@ angular.module('MyApp', [
     'MyApp.profile',
     'MyApp.signup',
     'MyApp.analytics',
-    'MyApp.dashboard'
+    'MyApp.dashboard',
+    'MyApp.requests'
 ])
 
 .config(['$routeProvider', function($routeProvider) {
