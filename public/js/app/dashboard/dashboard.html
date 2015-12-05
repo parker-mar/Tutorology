@@ -62,10 +62,10 @@
             <div class="panel panel-default" >
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
                     <div class="Row">
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <span ng-bind="req.topicId.name"></span>
-                            <span ng-bind="req.studentId.displayName"></span>
-                            <span ng-bind="req.created_at"></span>
+                          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                            <p>Topic: {{req.topicId.name}}</p>
+                            <p>Student: <a ng-href="/#/users/{{req.studentId._id}}/profile">  {{req.studentId.displayName}}</a> </p>
+                            <p>Time: {{req.created_at}}</p>
                         </div>
                     </div>
                 </div>
@@ -86,12 +86,12 @@
 
                      <div class="form-group">
                           <label for="comment">Request:</label>
-                          <textarea class="form-control" rows="3" ng-bind="req.message" disabled></textarea>
+                          <textarea class="form-control" rows="3" ng-model="req.message" ng-bind="req.message" disabled></textarea>
                     </div>
 
                      <div ng-if="!req.hasResponse || req.accepted" class="form-group">
                           <label for="comment">Response:</label>
-                          <textarea ng-model="req.resMessage" ng-disabled="req.hasResponse" class="form-control" rows="3"></textarea>
+                          <textarea ng-model="req.response" ng-disabled="req.hasResponse" class="form-control" rows="3"></textarea>
                     </div>
                 </div>
             </div>

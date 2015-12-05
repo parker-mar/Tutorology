@@ -7,7 +7,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
             controller: 'DashController'
         });
 }])
-.controller("DashController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope) {
+.controller("DashController", ['$scope','$http','$rootScope', '$filter', function($scope, $http, $rootScope, $filter) {
 
     // To Do --> correcting attibutes from data 
     //       --> LIVE testing
@@ -137,6 +137,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 
                         $scope.requests.forEach(function(req){
                             req.active = false;
+                            req.created_at = $filter('date')(req.created_at, 'medium');
                         });
             			$scope.userType = 'Tutors';
             		});
