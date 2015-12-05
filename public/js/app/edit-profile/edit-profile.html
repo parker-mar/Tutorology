@@ -9,8 +9,9 @@
         <div class="img-container" style="height:200px">
             <img ng-src="{{(user.profile.image)?user.profile.image:'/img/default-profile.jpg'}}" class="img-rounded img-profile">
         </div>
-        <div style="margin-bottom:10px;margin-top:10px">
-            <strong>Browse: </strong><input type="file" id="file"/>
+
+        <div style="margin-bottom:10px;margin-top:10px" >
+            <strong>Browse: </strong><input type="file" id="file" />
         </div>
         <button class="btn btn-primary" ng-click="changeImage()">Set Image</button>
 
@@ -67,8 +68,9 @@
         </div>
     </div>
 </div>
-<form name="form" data-toggle="validator" role="form">
-    <div class="row">
+<div class="row">
+    <br>
+    <form name="form" data-toggle="validator" role="form">
         <div class="col-xs-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -94,5 +96,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>

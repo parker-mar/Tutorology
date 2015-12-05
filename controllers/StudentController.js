@@ -99,7 +99,7 @@ var StudentController = function(app) {
         Requests.find({studentId : studentId}).populate([
                     {path: 'topicId', options: {sort: {name: 1}}},
                     {path: 'studentId'},
-                    {path: 'tutorId'}]).exec(function (err, requests) {
+                    {path: 'tutorId'},{path:'profile'}]).exec(function (err, requests) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});

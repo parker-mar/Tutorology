@@ -44,9 +44,10 @@ angular.module('MyApp.profile', ['ngRoute'])
                                 for(var key in  $scope.user.reviews){
                                     (function(review) {
                                         review.ratingWidth =  25*review.rating;
+                                        review.showReportingFields = (review.flagged)?false:true;
                                         review.time = Date.parse(review.created_at);
                                         review.time_formatted = $filter('date')(review.time, 'medium');
-                                            $http.get('/api/users/' + review.studentId).then(
+                                            $http.get('/api/users/' + review.studentId._id).then(
                                                 function successCallback(res) {
                                                     review.student = res.data.data;
                                                 },
@@ -166,7 +167,29 @@ angular.module('MyApp.profile', ['ngRoute'])
             )
         }
     };
-
+//put(root+'tutors/:tutorId/reviews/:reviewId',
+//  Sets the review flag
+//  @paramarg {String} tutorId       The ID of the tutor flagging the review.
+//  @paramarg {String} reviewId      The ID of the review.
+//  @bodyarg {Boolean} flagged       The flag.
+//  @bodyarg {String} reason         The reason for flagging (optional).
+//  @returns {Response}              The result of of the update operation.
+    $scope.updateReviewFlag = function(review){
+        $scope.temp = {};
+        $scope.temp.flagged = review.flagged;
+        $scope.temp.reason = review.reason;
+        $http.put('/api/tutors/'+$scope.actor._id+'/reviews/'+review._id,$scope.temp).then(
+            function successCallback(res) {
+                $rootScope.displayAlert('success','Review Flagged, Admin will check it as soon as possible.');
+                $scope.temp = {};
+                review.showReportingFields = false;
+            },
+            function errorCallback(res) {
+                //trigger error message here.
+                $rootScope.displayAlert('error',res.data.message);
+            }
+        );
+    };
     $scope.goToRequest = function(){
         go('/#/request/'+ $routeParams.userId);
     }
