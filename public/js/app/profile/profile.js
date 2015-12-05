@@ -14,6 +14,7 @@ angular.module('MyApp.profile', ['ngRoute'])
 .controller("ProfileController", ['$scope','$http','$routeParams','$rootScope','$filter', function($scope,$http,$routeParams,$rootScope,$filter) {
     $scope.user = {};
     $scope.newReview = {};
+    $scope.newReferral ={};
     // Redirects to the landing page if user is not logged in.
     $http.get('/api/actor').then(
         function successCallback(res){
@@ -41,6 +42,7 @@ angular.module('MyApp.profile', ['ngRoute'])
                                 $scope.user.reviews = res.data.data;
                                 for(var key in  $scope.user.reviews){
                                     (function(review) {
+                                        review.ratingWidth =  25*review.rating;
                                         review.time = Date.parse(review.created_at);
                                         review.time_formatted = $filter('date')(review.time, 'medium');
                                             $http.get('/api/users/' + review.studentId).then(
@@ -111,19 +113,7 @@ angular.module('MyApp.profile', ['ngRoute'])
         go('/#/users/'+ $routeParams.userId +'/profile/edit');
     };
 
-    // Deletes the target user when called.
-    $scope.deleteUser = function () {
-        $http.delete('/api/users/'+$scope.user._id).then(
-            function successCallback(res) {
-                window.location.href = '/#/';
-                $rootScope.displayAlert('success','User has been successfully deleted.');
-            },
-            function errorCallback(res) {
-                //trigger error message here.
-                $rootScope.displayAlert('error',res.data.message);
-            }
-        );
-    };
+
 
     // Promotes the user to "Admin" authorization level when called.
     $scope.makeUserAdmin = function () {
@@ -152,8 +142,27 @@ angular.module('MyApp.profile', ['ngRoute'])
             }
         );
     };
-
     $scope.referencing = function(){
-
+        $scope.newReferral.tutorId = $scope.user._id;
+        $(".error").hide();
+        if($scope.newReferral.message.length > 500) {
+            $rootScope.displayAlert("error", "Error: Description text exceeds maximum length of 500.");
+        } else if(!($scope.newReferral.toStudentEmail)){
+            $rootScope.displayAlert("error","Error: 'Refer to' field can't be empty.");
+        } else {
+            $http.post('/api/students/' + $rootScope.actor._id + "/referrals", $scope.newReferral).then(
+                function successCallback(res) {
+                    //trigger error message here.
+                    console.log("Add Referral Successful");
+                    $rootScope.displayAlert('success', 'Referral addition successful!');
+                    $scope.newReferral = {};
+                }, function errorCallback(res) {
+                    //trigger error message here.
+                    console.log("Refer Error");
+                    $rootScope.displayAlert('error', res.data.message);
+                    $scope.newReferral = {};
+                }
+            )
+        }
     };
 }]);

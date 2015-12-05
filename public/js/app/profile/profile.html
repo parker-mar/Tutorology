@@ -16,7 +16,7 @@
                 <th>Display Name</th>
                 <td>{{user.displayName}}</td>
             </tr>
-            <tr ng-if="user.userType == 'Tutor'">
+            <tr ng-if="user.userType == 'Tutors'">
                 <th>Rate (per hour)</th>
                 <td>{{user.rate}}</td>
             </tr>
@@ -26,97 +26,114 @@
             </tr>
         </table>
     </div>
-    <div class="row">
-        <div class="col-xs-6">
-            <div class="panel panel-default">
-                <!-- Default panel contents -->
-                <div class="panel-heading"><h2>Topics</h2></div>
-                <!--<div class="panel-body">-->
-                <!--</div>-->
+</div>
+<div class="row" ng-if="user.userType == 'Tutors'" >
+    <div class="col-xs-6" ng-if="user.topics.length != 0 ">
+        <h2>Topics</h2>
+        <div class="panel panel-default">
+            <table class="table">
+                <thead>
 
-                <!-- Table -->
-                <table class="table">
-                    <thead>
+                </thead>
+                <tbody>
+                <tr ng-repeat="topic in user.topics" >
+                    <th style="text-align: center;">{{topic.name}}</th>
+                </tr>
 
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="topic in user.topics">
-                        <th>{{topic.name}}</th>
-                    </tr>
-
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="row">
-        <div class="col-xs-6">
-            <h2>Reviews</h2>
+</div>
+<div class="row" >
+    <div class= "col-xs-8" >
+        <h2>Reviews</h2>
+        <div class="panel panel-default" ng-if="(actor._id != user._id)">
+            <div class="panel-heading">
+                <h2 class="panel-title">Add Review</h2>
+            </div>
+            <div class="panel-body">
+                <form data-toggle="validator" role="form" name="form">
+                    <table class="table">
+                        <tr>
+                            <div class="form-group" ng-class="{ 'has-error': form.reviewRating.$invalid && !form.reviewRating.$pristine}">
+                                <th>Rating</th>
+                                <td><input ng-model="newReview.rating" class="form-control" name="reviewRating" placeholder="Rating" type="number" min="0" max="5" step="1" value="2"></td>
+                            </div>
+                        </tr>
+                        <tr>
+                            <div class="form-group" ng-class="{ 'has-error': form.reviewMessage.$invalid && !form.reviewMessage.$pristine}">
+                                <th>Message</th>
+                                <td><textarea ng-model="newReview.message" class="form-control" name="reviewMessage" placeholder="Message" style="resize:vertical;"></textarea></td>
+                            </div>
+                        </tr>
+                    </table>
+                    <button class="btn btn-primary" ng-click="addReview()">Add Review</button>
+                </form>
+            </div>
+        </div>
+        <div class="panel-group" ng-if="user.reviews.length != 0 ">
             <div class="panel panel-default" ng-repeat="review in user.reviews | orderBy:'-time'">
-
-                <!-- Default panel contents -->
-                <div class="panel-heading">
-                    <th>{{review.student.displayName}}</th>
-                    <th>{{review.rating}}</th>
-                    <th>{{review.time_formatted}}</th>
-                </div>
                 <div class="panel-body">
-                    <th>{{review.message}}</th>
-                    <div ng-if="(actor._id == user._id)" class="checkbox">
-                        <label><input ng-model="review.flagged" type="checkbox" value="">Flag</label>
-                    </div>
+                    <table class="table" style="text-align: justify;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">{{review.student.displayName}}</th>
+                                <th style="text-align: center;">
+                                    <div class="star-ratings-css">
+                                        <div class="star-ratings-css-top" ng-style="{width: review.ratingWidth}" style="width: 100px;"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                        <div class="star-ratings-css-bottom"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+                                    </div>
+                                </th>
+                                <th style="text-align: right;">{{review.time_formatted}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="3">{{review.message}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-footer" ng-if="(actor._id == user._id)|| actor.authorization=='Admin' || actor.authorization =='SAdmin'">
+                    <input ng-model="review.flagged" type="checkbox" id="flagBox">
+                    <label for="flagBox">Report an Issue</label>
                     <div ng-if="review.flagged">
-                        <input ng-model="review.reason">
-                        <button ng-click="updateReviewFlag(review)">Flag</button>
+                        <div class="form-group" ng-class="{ 'has-error': form.flagReason.$invalid && !form.flagReason.$pristine}">
+                            <th>Reason</th>
+                            <td><textarea ng-model="review.reason" class="form-control" name="flagReason" placeholder="Message" style="resize:vertical;"></textarea></td>
+                        </div>
+                        <button class="btn btn-primary" ng-click="updateReviewFlag(review)" ng-disabled="form.$invalid">Report</button>
                     </div>
-                </div>
-            </div>
-            <h2>Add Review</h2>
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <form data-toggle="validator" role="form" name="form">
-                        <table class="table">
-                            <tr>
-                                <div class="form-group" ng-class="{ 'has-error': form.reviewRating.$invalid && !form.reviewRating.$pristine}">
-                                    <th>Rating</th>
-                                    <td><input ng-model="newReview.rating" class="form-control" name="reviewRating" type="number" min="0" max="5" step="1" value="2"></td>
-                                </div>
-                            </tr>
-                            <tr>
-                                <div class="form-group" ng-class="{ 'has-error': form.reviewMessage.$invalid && !form.reviewMessage.$pristine}">
-                                    <th>Message</th>
-                                    <td><textarea ng-model="newReview.message" class="form-control" name="reviewMessage" style="resize:vertical;"></textarea></td>
-                                </div>
-                            </tr>
-                        </table>
-                        <button class="btn btn-primary" ng-click="addReview()">Add Review</button>
-                    </form>
-
                 </div>
             </div>
         </div>
     </div>
-    <div class="row"  ng-if="user.userType == 'Student'">
-        <div class="col-xs-8">
-            <h2>Refer a student</h2>
+</div>
+    <div class="row" ng-if="user.userType == 'Tutors'">
+         <div class="col-xs-8">
             <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Refer a student to this tutor</h2>
+                </div>
                 <div class="panel-body">
                         <form data-toggle="validator" role="form" name="form">
                             <table class="table">
                                 <tr>
-                                    <div class="form-group" ng-class="{ 'has-error': form.referredTo.$invalid && !form.referredTo.$pristine}">
-                                        <th>Referred To</th>
-                                        <td><input ng-model="referral.displayName" class="form-control" name="referredTo" type="text"></td>
+                                    <div class="form-group" ng-class="{ 'has-error': form.email.$invalid && !form.email.$pristine}">
+                                        <label for="inputEmail" class="control-label">Email</label>
+                                        <input ng-model="newReferral.toStudentEmail" type="email" class="form-control" id="inputEmail" name="email" placeholder="Email" data-error="Email address is invalid" required>
+                                        <div class="help-block with-errors"></div>
                                     </div>
                                 </tr>
                                 <tr>
                                     <div class="form-group" ng-class="{ 'has-error': form.message.$invalid && !form.message.$pristine}">
-                                        <th>Message</th>
-                                        <td><textarea ng-model="referral.message" class="form-control" name="message" style="resize:vertical;"></textarea></td>
+                                        <label for="inputMessage" class="control-label">Message</label>
+                                        <textarea ng-model="newReferral.message" id="inputMessage" class="form-control" name="message" placeholder="Message" style="resize:vertical;" required></textarea>
                                     </div>
                                 </tr>
                             </table>
-                            <button class="btn btn-primary" ng-click="referencing()">Update</button>
+                            <button class="btn btn-primary" ng-click="referencing()" ng-disabled="form.$invalid">Refer</button>
                         </form>
 
                 </div>
@@ -125,12 +142,7 @@
     </div>
     <div ng-if="actor.authorization=='Admin' || actor.authorization =='SAdmin'" class="col-xs-8">
         <div class="panel panel-default">
-            <!-- Default panel contents -->
             <div class="panel-heading">User Connection Info</div>
-            <!--<div class="panel-body">-->
-            <!--</div>-->
-
-            <!-- Table -->
             <table class="table">
                 <thead>
                 <tr>
@@ -152,8 +164,6 @@
                     </tr>
                 </tbody>
             </table>
-
-            <!-- Table -->
             <table class="table">
                 <thead>
                     <tr>
@@ -224,3 +234,29 @@
         </div>
     </div>
 </div>
+<style>
+    .star-ratings-css {
+        unicode-bidi: bidi-override;
+        color: #c5c5c5;
+        font-size: 25px;
+        height: 25px;
+        width: 100px;
+        margin: 0 auto;
+        margin-bottom: 5px;
+        position: relative;
+        padding: 0;
+    }
+
+    .star-ratings-css-top {
+        color: #F0AD4E;
+        padding: 0;
+        position: absolute;
+        z-index: 1;
+        display:block;
+        left: 0px;
+        overflow: hidden;
+    }
+    .star-ratings-css-bottom {
+        z-index: 0;
+    }
+</style>

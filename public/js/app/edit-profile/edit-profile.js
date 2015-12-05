@@ -52,6 +52,20 @@ angular.module('MyApp.edit-profile', ['ngRoute'])
             window.location.href = '/#/';
         }
     );
+    // Deletes the target user when called.
+    $scope.deleteUser = function () {
+        $http.delete('/api/users/'+$scope.user._id).then(
+            function successCallback(res) {
+                $rootScope.logout();
+                window.location.href = '/#/';
+                $rootScope.displayAlert('success','User has been successfully deleted.');
+            },
+            function errorCallback(res) {
+                //trigger error message here.
+                $rootScope.displayAlert('error',res.data.message);
+            }
+        );
+    };
 
     // Updates the target user when called.
     $scope.updating = function() {

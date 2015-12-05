@@ -1,17 +1,19 @@
 <h2>Edit Profile</h2>
+<div style="margin-bottom:10px;margin-top:10px">
+    <button ng-if="(user.authorization !='SAdmin') && ( (actor._id == user._id) || (actor.authorization=='Admin'&& user.authorization == 'User') || (actor.authorization =='SAdmin'))" class="btn btn-danger" ng-click="deleteUser()">Delete User</button>
+    <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'User'" class="btn btn-success" ng-click="makeUserAdmin()">Make Admin</button>
+    <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'Admin'" class="btn btn-warning" ng-click="demoteToUser()">Demote to User</button>
+</div>
 <div class="row">
     <div class="col-xs-4">
         <div class="img-container" style="height:200px">
             <img ng-src="{{(user.profile.image)?user.profile.image:'/img/default-profile.jpg'}}" class="img-rounded img-profile">
         </div>
-        <button ng-if="(user.authorization !='SAdmin') && ( (actor._id == user._id) || (actor.authorization=='Admin'&& user.authorization == 'User') || (actor.authorization =='SAdmin'))" class="btn btn-default" ng-click="deleteUser()">Delete User</button>
-        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'User'" class="btn btn-default" ng-click="makeUserAdmin()">Make Admin</button>
-        <button ng-if="actor.authorization=='SAdmin' && user.authorization == 'Admin'" class="btn btn-default" ng-click="demoteToUser()">Demote to User</button>
-
         <div style="margin-bottom:10px;margin-top:10px">
             <strong>Browse: </strong><input type="file" id="file"/>
         </div>
-        <button class="btn btn-default" ng-click="changeImage()">Set Image</button>
+        <button class="btn btn-primary" ng-click="changeImage()">Set Image</button>
+
     </div>
     <div class="col-xs-8">
         <form data-toggle="validator" role="form" name="form">
@@ -44,31 +46,21 @@
         </form>
     </div>
 </div>
-<div class="row">
-    <div class="col-xs-8">
+<div class="row" ng-if="user.userType == 'Tutors'">
+    <div class="col-xs-6">
         <h2>Topics</h2>
         <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">Topics</div>
-            <!--<div class="panel-body">-->
-            <!--</div>-->
-
-            <!-- Table -->
             <table class="table">
                 <thead>
-                <!--<tr>-->
-                    <!--<th>Topic</th>-->
-                    <!--<th></th>-->
-                <!--</tr>-->
                 </thead>
                 <tbody>
                     <tr ng-repeat="topic in user.topics">
-                        <td>{{topic.name}}</td>
-                        <td><button class="btn btn-default" ng-click="removeTopic(topic)">Remove</button></td>
+                        <th>{{topic.name}}</th>
+                        <td style="text-align: right;"><button class="btn btn-default" ng-click="removeTopic(topic)">Remove</button></td>
                     </tr>
                     <tr>
-                        <td><input ng-model="newTopic.topicName" class="form-control" name="newTopic" type="text"></td>
-                        <td><button class="btn btn-primary" ng-click="addTopic()">Add Topic</button></td>
+                        <th><input ng-model="newTopic.topicName" class="form-control" name="newTopic" type="text" placeholder="Topic"></th>
+                        <td style="text-align: right;"><button class="btn btn-primary" ng-click="addTopic()">Add Topic</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -77,27 +69,29 @@
 </div>
 <form name="form" data-toggle="validator" role="form">
     <div class="row">
-        <div class="col-xs-12">
-            <h2>Change Password</h2>
-                <div class="form-group"  ng-class="{ 'has-error': form.oldPass.$invalid && !form.oldPass.$pristine}">
-                    <label for="inputOldPass" class="control-label">Old Password</label>
-                    <input ng-model="passChange.oldPass" type="password" class="form-control" id="inputOldPass" name="oldPass" placeholder="Old Password" required>
-                    <div class="help-block with-errors"></div>
+        <div class="col-xs-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Change Password</h2>
                 </div>
-                <div class="form-group" ng-class="{ 'has-error': form.newPass.$invalid && !form.newPass.$pristine}">
-                    <label for="inputNewPass" class="control-label">New Password</label>
-                    <input ng-model="passChange.newPass" type="password" class="form-control" id="inputNewPass" name="newPass" placeholder="New Password" required>
-                    <div class="help-block with-errors"></div>
+                <div class="panel-body">
+                    <div class="form-group"  ng-class="{ 'has-error': form.oldPass.$invalid && !form.oldPass.$pristine}">
+                        <label for="inputOldPass" class="control-label">Old Password</label>
+                        <input ng-model="passChange.oldPass" type="password" class="form-control" id="inputOldPass" name="oldPass" placeholder="Old Password" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error': form.newPass.$invalid && !form.newPass.$pristine}">
+                        <label for="inputNewPass" class="control-label">New Password</label>
+                        <input ng-model="passChange.newPass" type="password" class="form-control" id="inputNewPass" name="newPass" placeholder="New Password" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error': form.confirmNewPass.$invalid && !form.confirmNewPass.$pristine}">
+                        <label for="inputConfirmNewPass" class="control-label">Confirm New Password</label>
+                        <input ng-model="passChange.confirmNewPass" type="password" class="form-control" id="inputConfirmNewPass" name="confirmNewPass" placeholder="Confirm New Password" valid-password-c="newPass" required>
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <button class="btn btn-primary" ng-click="changePass()" type="submit" ng-disabled="form.$invalid">Change Password</button>
                 </div>
-                <div class="form-group" ng-class="{ 'has-error': form.confirmNewPass.$invalid && !form.confirmNewPass.$pristine}">
-                    <label for="inputConfirmNewPass" class="control-label">Confirm New Password</label>
-                    <input ng-model="passChange.confirmNewPass" type="password" class="form-control" id="inputConfirmNewPass" name="confirmNewPass" placeholder="Confirm New Password" valid-password-c="newPass" required>
-                    <div class="help-block with-errors"></div>
-                </div>
-                </tr>
-            </table>
-            <div class="form-group">
-                <button class="btn btn-default" ng-click="changePass()" type="submit" ng-disabled="form.$invalid">Change Password</button>
             </div>
         </div>
     </div>
