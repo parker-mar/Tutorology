@@ -1,1 +1,21 @@
-<div> </div>
+
+<div ng-if="userType == 'Students'">
+
+			 <h1> Request for <a ng-href="/#/users/{{tutor._id}}/profile">{{tutor.displayName}}</a> </h1> 
+
+	        <select ng-model="topicID" class="form-control">
+            	<option ng-repeat="topic in tutor.topics" ng-value="topic._id" ng-bind="topic.name"> </option>
+        	</select>
+
+             <div class="form-group">
+                  <label for="comment">Request:</label>
+                  <textarea ng-model="requestMessage"  class="form-control" rows="3"></textarea>
+            </div>
+
+            <p> {{topicID}} {{requestMessage}} </p>
+
+            <button class="btn btn-success" ng-click="sendRequest()"> 
+            	Submit Request
+            </button>
+
+    </div>

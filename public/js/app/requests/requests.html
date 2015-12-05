@@ -1,5 +1,5 @@
 <div ng-if="userType == 'Students'">
-        <center><h4> Click to read requests</h4></center>
+        <center ng-if="requests.length == 0"><h4>No Requests</h4></center>
         <div ng-repeat="req in requests">
             <div class="panel panel-default" >
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">

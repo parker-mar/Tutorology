@@ -23,10 +23,7 @@ angular.module('MyApp.requests', ['ngRoute'])
 			$scope.userType = $rootScope.actor.userType;
 			$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
 	            function successCallback(res){
-	            		console.log("THIS is the requests controller http response")
 	                    $scope.requests = res.data.data;
-	                    $scope.requests = [{n: 1}, {n: 2}, {n: 3}]
-	                    console.log($scope.requests);
 	                    $scope.requests.forEach(function(req){
 	                        req.active = false;
 	                    });

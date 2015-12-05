@@ -15,6 +15,28 @@ angular.module('MyApp.request', ['ngRoute'])
 		console.log(res.data.data);
 	});
 
+	$scope.topics = [];
+	//$scope.topicID = 1;
+	$scope.requestMessage = '';
+
+
+
+	if ($rootScope.actor){
+		if ($rootScope.actor.userType === 'Students'){
+			$scope.userType = $rootScope.actor.userType;
+			$http.get("/api/tutors/" + $routeParams.tutorId).then(function sucessCallback (res){
+				$scope.tutor = res.data.data;
+					
+			});
+
+		} else {
+			window.location.href = '/#/';
+		}
+
+	} else {
+		window.location.href = '/#/';
+	}
+
 
 /*
 	if ($rootScope.actor){
