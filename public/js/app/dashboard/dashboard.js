@@ -7,7 +7,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
             controller: 'DashController'
         });
 }])
-.controller("DashController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope,$routeParams) {
+.controller("DashController", ['$scope','$http','$rootScope', function($scope, $http, $rootScope) {
 
     // To Do --> correcting attibutes from data 
     //       --> LIVE testing
@@ -18,6 +18,10 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 	$scope.noResponseClass = 'bg-info';
 	$scope.acceptResponseClass = 'bg-success';
 	$scope.denyResponseClass = 'bg-danger';
+    $scope.noRating = "Not Yet Rated";
+    $scope.noDescription = "Description Not Yet Set";
+    $scope.noTopic = "Topics Not Yet Set";
+    $scope.noDisplayName = "Display Name Not Yet Set";
 
     $scope.panelClick = function (panel){
         panel.active = !panel.active;
@@ -74,30 +78,22 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         }
     };
  
-
-    // TEST DATA
-    //$scope.userType = 'Tutor';
-    //$scope.requests = [{studentName: "Arthur", hasResponse: true, rating: 4, review: "THIS GUY SUCKS", message: "This guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad reviewThis guy made a bad review", active: false}, {n: 2, active: false},{n: 3, active: false},{n: 4, active: false}];
-
-
 	$http.get('/api/actor').then(
         function successCallback(res){
-            console.log("TEST1");
             $rootScope.actor = res.data.data;
-            console.log($rootScope.actor);
             // If actor is student default response is to send reconmmended Tutors
             if ($rootScope.actor.userType == 'Students'){
-                console.log("TEST1.5");
             	$http.get('/api/students/' + $rootScope.actor._id + '/recommendations').then(
             		function successCallback(res){
-                        console.log("TEST2");
             			$scope.tutors = res.data.data;
                         console.log($scope.tutors);
-                        console.log("TEST3");
                         $scope.tutors.forEach(function(tutor){
-                            //tutor.topicStr = tutor.topics.join([separator = ',']);
+                            tutor.topicStr = "";
+                            tutor.topics.forEach(function(topic){
+                                tutor.topicStr += (topic.name + ", ");
+                            })
                         });
-            			$scope.userType = 'Student';
+            			$scope.userType = 'Students';
             		},
                             function errorCallback(res){
                                 //trigger error message here.
@@ -112,10 +108,11 @@ angular.module('MyApp.dashboard', ['ngRoute'])
             		function successCallback(res){
             			$scope.requests = res.data.data;
 
+
                         $scope.requests.forEach(function(req){
                             req.active = false;
                         });
-            			$scope.userType = 'Tutor';
+            			$scope.userType = 'Tutors';
             		});
             } else if ($rootScope.actor.userType == 'Tutor'){
                 $http.get('/api/admin/get-disputes/').then(

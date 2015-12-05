@@ -25,30 +25,33 @@
             </div><!-- /.col-lg-6 -->
         </div>
 
+        <center ng-if="tutors.length == 0"><h4>No Tutors Found.</h4></center>
         <div ng-repeat="tutor in tutors">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <div class="Row">
-                        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <img src="tutor.image"></img>
+            <a ng-href="/#/users/{{tutor._id}}/profile">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="Row">
+                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                <img ng-src="{{(tutor.profile.image)?tutor.profile.image:'/img/default-profile.jpg'}}" style="width: 100%; height:100%; max-width: 75px; max-height: 75px"></img>
+                            </div>
+                            <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+                                <span>Name: {{tutor.displayName ? tutor.displayName : noDisplayName}} </span>
+                                <br>
+                                <span>Topics: {{tutor.topicStr != '' ? tutor.topicStr : noTopic }} </span>
+                            </div> 
                         </div>
-                        <div  class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
-                            <span>Name: {{tutor.displayName}} </span>
-                            <br>
-                            <span>Topics: {{tutor.topicStr}} </span>
-                        </div> 
-                    </div>
 
-                    <div class="Row">
-                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                            <span> {{tutor.rating}} </span>
-                        </div>
-                        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
-                            <span> Description: {{tutor.description}} </span>
+                        <div class="Row">
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                                <span>Rating: {{tutor.rating ? tutor.rating : noRating}} </span>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6" >
+                                <span> Description: {{tutor.description ? tutor.description :  noDescription}} </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 
@@ -60,8 +63,8 @@
                 <div class="panel-body" ng-click='panelClick(req)' ng-class="!req.hasResponse ? noResponseClass : (req.accepted ? acceptResponseClass : denyResponseClass)">
                     <div class="Row">
                         <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
-                            <span ng-bind="req.Topic.name"></span>
-                            <span ng-bind="req.Student.name"></span>
+                            <span ng-bind="req.topicId.name"></span>
+                            <span ng-bind="req.studentId.displayName"></span>
                             <span ng-bind="req.created_at"></span>
                         </div>
                     </div>
@@ -69,11 +72,11 @@
                 <div ng-if="req.active" class="panel-footer">
                     <div ng-if="!req.hasResponse" class="input-group" style="margin-bottom: 20px">
                         <label class="radio-inline">
-                            <input name="{{req.studentName}}" type="radio" checked ng-model="req.accepted" ng-value="true">
+                            <input name="{{req.studentId.displayName}" type="radio" checked ng-model="req.accepted" ng-value="true">
                             Accept
                         </label>
                         <label class="radio-inline">
-                            <input name="{{req.studentName}}" type="radio" ng-model="req.accepted" ng-value="false">
+                            <input name="{{req.studentId.displayName}}" type="radio" ng-model="req.accepted" ng-value="false">
                             Deny
                         </label>
                         <button class="btn btn-primary btn-lg" ng-click="sendRequest(req)" type="button">
