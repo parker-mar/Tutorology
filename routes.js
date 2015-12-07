@@ -42,6 +42,18 @@ module.exports = function(app) {
     app.post(root+'logout',
         securityGate.checkIfUserIsSignedIn, loginController.logout);
 
+
+    app.get(root+'login/student/google',
+        loginController.googleStudentLogin);
+
+    app.get(root+'login/tutor/google',
+        loginController.googleTutorLogin);
+
+    app.get(root+'auth/student',
+        loginController.handleStudentRedirect);
+    app.get(root+'auth/tutor',
+        loginController.handleTutorRedirect);
+
     // User Routes
     app.get(root+'users',
         securityGate.checkIfUserIsSignedIn, userController.getAllUsers);

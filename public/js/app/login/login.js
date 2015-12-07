@@ -11,7 +11,7 @@ angular.module('MyApp.login', ['ngRoute'])
         });
 }])
 
-.controller("LoginController", ['$scope','$http','$rootScope', function($scope,$http,$rootScope) {
+.controller("LoginController", ['$scope','$http','$rootScope','$location', function($scope,$http,$rootScope,$location) {
     $scope.loginInfo = {};
 
     // Redirects to the home page if the user is already logged in.
@@ -36,5 +36,12 @@ angular.module('MyApp.login', ['ngRoute'])
                 $rootScope.displayAlert('error',res.data.message);
             }
         );
-    }
+    };
+    $scope.loginGoogleTutor = function (){
+        $location.path('api/login/tutor/google');
+    };
+    $scope.loginGoogleStudent = function (){
+        $location.path('api/login/student/google');
+    };
+
 }]);

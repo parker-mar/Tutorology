@@ -155,6 +155,185 @@ var LoginController = function(app) {
         }
     };
 
+    this.handleStudentRedirect = function(req,res,next) {
+        if(typeof req.query.code === 'undefined') {
+            var errMsg = "Error: Authorization code was not provided!"
+            res.status(400).send({error: true, message:errMsg});
+        }
+        else
+        {
+            var code = req.query.code;
+            var plus = app.google.plus('v1');
+
+            var oauth2Client = new app.OAuth2(app.CLIENT_ID, app.CLIENT_SECRET, app.STUDENT_REDIRECT_URL);
+
+            oauth2Client.getToken(code, function(err, tokens) {
+                // Now tokens contains an access_token and an optional refresh_token. Save them.
+                if(!err) {
+                    oauth2Client.setCredentials(tokens);
+                    plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, response) {
+                        // handle err and response
+                        // You have the profile now.
+                        if(err) {
+                            res.status(500).send({error: true, message: "An internal server error occurred."});
+                        }
+                        else {
+                            //Find or save user.
+
+                            Users.findOne({email:response.emails[0].value}, function(err, user) {
+                                if (err) {
+                                    console.log(err.message);
+                                    res.status(500).send({error:true,message:"An internal server error occurred."});
+                                }
+                                if (user) {
+                                        req.session.userId = user._doc._id;
+                                        console.log("User " + user.email + " Successfully logged in");
+                                        res.redirect('/#/');
+                                }
+                                else {
+                                    // Registering google user
+                                    Users.count({}, function(err,count){
+                                        if(err){
+                                            console.log(err.message);
+                                            res.status(500).send({error:true,message:"An internal server error occurred."});
+                                        }
+                                        var authorization = (count==0)?"SAdmin":"User";
+                                        Profiles.create({
+                                            description: ""
+                                        },function(err,profile){
+                                            if(err){
+                                                console.log(err.message);
+                                                res.status(500).send({error:true,message:"An internal server error occurred."});
+                                            }
+
+                                            // Create based on the kind of User.
+                                            var Database = Users;
+                                            var attributes = {
+                                                email: response.emails[0].value,
+                                                displayName: response.displayName,
+                                                password: bcrypt.hashSync("", bcrypt.genSaltSync(8), null),
+                                                authorization: authorization,
+                                                profile: profile._id
+                                            };
+                                            Database = Students;
+                                            Database.create(attributes, function(err,user) {
+                                                if(err){
+                                                    console.log(err.message);
+                                                    res.status(500).send({error:true,message:"An internal server error occurred."});
+                                                }
+                                                req.session.userId = user._doc._id;
+                                                delete user._doc.password;
+                                                delete user._doc.__v;
+                                                res.redirect('/#/');
+                                            });
+                                        });
+                                    });
+
+                                }
+                            });
+
+
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    this.handleTutorRedirect = function(req,res,next) {
+        if(typeof req.query.code === 'undefined') {
+            var errMsg = "Error: Authorization code was not provided!"
+            res.status(400).send({error: true, message:errMsg});
+        }
+        else
+        {
+            var code = req.query.code;
+            var plus = app.google.plus('v1');
+
+            var oauth2Client = new app.OAuth2(app.CLIENT_ID, app.CLIENT_SECRET, app.TUTOR_REDIRECT_URL);
+
+            oauth2Client.getToken(code, function(err, tokens) {
+                // Now tokens contains an access_token and an optional refresh_token. Save them.
+                if(!err) {
+                    oauth2Client.setCredentials(tokens);
+                    plus.people.get({ userId: 'me', auth: oauth2Client }, function(err, response) {
+                        // handle err and response
+                        // You have the profile now.
+                        if(err) {
+                            res.status(500).send({error: true, message: "An internal server error occurred."});
+                        }
+                        else {
+                            //Find or save user.
+
+                            Users.findOne({email:response.emails[0].value}, function(err, user) {
+                                if (err) {
+                                    console.log(err.message);
+                                    res.status(500).send({error:true,message:"An internal server error occurred."});
+                                }
+                                if (user) {
+                                    req.session.userId = user._doc._id;
+                                    console.log("User " + user.email + " Successfully logged in");
+                                    res.redirect('/#/');
+                                }
+                                else {
+                                    // Registering google user
+                                    Users.count({}, function(err,count){
+                                        if(err){
+                                            console.log(err.message);
+                                            res.status(500).send({error:true,message:"An internal server error occurred."});
+                                        }
+                                        var authorization = (count==0)?"SAdmin":"User";
+                                        Profiles.create({
+                                            description: ""
+                                        },function(err,profile){
+                                            if(err){
+                                                console.log(err.message);
+                                                res.status(500).send({error:true,message:"An internal server error occurred."});
+                                            }
+
+                                            // Create based on the kind of User.
+                                            var Database = Users;
+                                            var attributes = {
+                                                email: response.emails[0].value,
+                                                displayName: response.displayName,
+                                                password: bcrypt.hashSync("xxx", bcrypt.genSaltSync(8), null),
+                                                authorization: authorization,
+                                                profile: profile._id
+                                            };
+                                            Database = Tutors;
+                                            attributes.charge = 0.00;
+                                            Database.create(attributes, function(err,user) {
+                                                if(err){
+                                                    console.log(err.message);
+                                                    res.status(500).send({error:true,message:"An internal server error occurred."});
+                                                }
+                                                req.session.userId = user._doc._id;
+                                                delete user._doc.password;
+                                                delete user._doc.__v;
+                                                res.redirect('/#/');
+                                            });
+                                        });
+                                    });
+
+                                }
+                            });
+
+
+                        }
+                    });
+                }
+            });
+        }
+    };
+
+    this.googleStudentLogin = function(req,res,next) {
+        res.redirect(app.studentAuthUrl);
+    }
+
+    this.googleTutorLogin = function(req,res,next) {
+        res.redirect(app.tutorAuthUrl);
+    }
+
 };
 
 module.exports = LoginController;

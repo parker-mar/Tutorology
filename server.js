@@ -16,6 +16,35 @@ var uuid = require('uuid');
 
 app.mongoose = mongoose;
 
+// Google Sign-In Setup
+app.google = require('googleapis');
+app.OAuth2 = app.google.auth.OAuth2;
+
+app.CLIENT_ID = "239262608720-9i436pnl9iul3ijl23a3klnl4r04qbjh.apps.googleusercontent.com";
+app.CLIENT_SECRET = "y7xPvSWNmKiDmiz5MiSpRtOA";
+
+app.STUDENT_REDIRECT_URL = (process.argv[2])?"https://shielded-ravine-5131.herokuapp.com/api/auth/student":"http://localhost:3000/api/auth/student";
+app.TUTOR_REDIRECT_URL = (process.argv[2])?"https://shielded-ravine-5131.herokuapp.com/api/auth/tutor":"http://localhost:3000/api/auth/tutor";
+
+var studentOauth2Client = new app.OAuth2(app.CLIENT_ID, app.CLIENT_SECRET, app.STUDENT_REDIRECT_URL);
+var tutorOauth2Client = new app.OAuth2(app.CLIENT_ID, app.CLIENT_SECRET, app.TUTOR_REDIRECT_URL);
+
+
+// generate a url that asks permissions for Google+ and Google Calendar scopes
+var scopes = [
+    'profile','email'
+];
+
+app.studentAuthUrl = studentOauth2Client.generateAuthUrl({
+    access_type: 'offline', // 'online' (default) or 'offline' (gets refresh_token)
+    scope: scopes // If you only need one scope you can pass it as string
+});
+
+app.tutorAuthUrl = tutorOauth2Client.generateAuthUrl({
+    access_type: 'offline', // 'online' (default) or 'offline' (gets refresh_token)
+    scope: scopes // If you only need one scope you can pass it as string
+});
+
 //To connect to MongoDB's database
 //mongoose.connect('mongodb://heroku_9g2w3hbk:beoftgpg361fiht6a0tsnqb7qu@ds041924.mongolab.com:41924/heroku_9g2w3hbk');
 
