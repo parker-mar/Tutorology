@@ -86,13 +86,13 @@ app.activityLogger = new ActivityLogger(app);
 require('./routes')(app);
 
 //To connect to heroku online app
-//app.set('port', (process.env.PORT || 3000));
-//app.listen(app.get('port'), function() {
-//    console.log('Node app is running on port', app.get('port'));
-//});
+app.set('port', (process.env.PORT || 3000));
+app.listen(app.get('port'), function() {
+    console.log('Node app is running on port', app.get('port'));
+});
 
 //To connect locally
-app.listen(3000,'0.0.0.0');
+//app.listen(3000,'0.0.0.0');
 
 console.log('Server running at http://127.0.0.1:3000/');
 
