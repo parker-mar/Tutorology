@@ -98,8 +98,8 @@ var StudentController = function(app) {
 
         Requests.find({studentId : studentId}).populate([
                     {path: 'topicId', options: {sort: {name: 1}}},
-                    {path: 'studentId'},
-                    {path: 'tutorId'},{path:'profile'}]).exec(function (err, requests) {
+                    {path: 'studentId', select: 'displayName'},
+                    {path: 'tutorId', select: 'displayName'},{path:'profile'}]).exec(function (err, requests) {
             if (err) {
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
@@ -112,6 +112,8 @@ var StudentController = function(app) {
                 res.status(400).send({error: true, message: errMsg});
                 return;
             }
+
+            console.log(requests);
 
             res.send({error : false, data : requests});
         });
@@ -255,6 +257,7 @@ var StudentController = function(app) {
                 var errMsg = "No student with given email.";
                 console.log(errMsg);
                 res.status(400).send({error: true, message: errMsg});
+                return;
             }
 
             var attributes = {
@@ -283,11 +286,10 @@ var StudentController = function(app) {
         var studentId = req.params.studentId;
 
         Referrals.find({toStudentId : studentId}).populate([
-                    {path: 'fromStudentId'},
-                    {path: 'tutorId'}])
+                    {path: 'fromStudentId', select: 'displayName'},
+                    {path: 'tutorId', select: 'displayName'}])
         .exec(function (err, referrals) {
             if (err) {
-                console.log("Failed HERE");
                 console.log(err.message);
                 res.status(500).send({error : true, message : "An internal server error occurred."});
                 return;
@@ -313,8 +315,6 @@ var StudentController = function(app) {
         var studentId = req.params.studentId;
         var referralId = req.params.referralId;
         var isRead = (req.body.isRead == "true" ? true : false);
-        console.log(isRead);
-        console.log("loogged is read");
 
         if (typeof isRead === "undefined") {
             var errMsg = "Error: isRead unspecified";
@@ -354,11 +354,7 @@ var StudentController = function(app) {
     this.getRecommendations = function (req,res,next) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
-        console.log("Student Id of request");
-        console.log(studentId);
-        Requests.find({}).exec(function (err, request) {
-            console.log(request);
-        });
+
         // find requests made by the student and sort from newest to oldest
         Requests.find({studentId : studentId}).sort({created_at : 'desc'}).exec(function (err, request) {
             if (err) {
@@ -366,8 +362,6 @@ var StudentController = function(app) {
                 res.status(500).send({error: true, message: "An internal server error occurred."});
                 return;
             }
-
-            console.log(request);
 
             // if the student has made requests before
             if (request.length > 0) {
@@ -396,7 +390,6 @@ var StudentController = function(app) {
                     res.send({error: false, data: validTutors});
                 });
             } else {
-                console.log("No requests Made.");
                 Tutors.find({}, Tutors.defaultFilter).sort({rating : 'desc'}).populate([
                     {path: 'profile'},
                     {path: 'topics', options: {sort: {name: 1}}}]).exec(function (err, tutors) {

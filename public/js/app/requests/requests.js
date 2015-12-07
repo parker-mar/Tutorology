@@ -27,11 +27,11 @@ angular.module('MyApp.requests', ['ngRoute'])
 				$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
 		            function successCallback(res){
 		                    $scope.requests = res.data.data;
-		                    console.log($scope.requests);
 		                    $scope.requests.forEach(function(req){
 		                    	req.active = false;
 		                    	req.created_at = $filter('date')(req.created_at, 'medium');
-		                    });	
+		                    });
+							console.log($scope.requests);
 		                }, function errorCallback(res){	
 							            //trigger error message here.
 						        console.log("Failed getting requests.");

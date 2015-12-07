@@ -1,6 +1,8 @@
 /**
  * Created by ahmedel-baz on 15-11-05.
  */
+var bcrypt = require('bcrypt-nodejs');
+
 module.exports = function(app){
     var findOrCreate = require('mongoose-findorcreate');
 
@@ -21,6 +23,10 @@ module.exports = function(app){
         topics: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Topics'}],
         referrals: [{ type: app.mongoose.SchemaTypes.ObjectId, ref: 'Referrals'}]
     }, { discriminatorKey: 'userType' });
+
+    UserSchema.methods.validPassword = function(password) {
+        return bcrypt.compareSync(password, this.password);
+    };
 
     UserSchema.plugin(findOrCreate);
 
