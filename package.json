@@ -29,7 +29,6 @@
     "should": ">= 0.0.1",
     "supertest": "^0.15.0",
     "user-agent-parser": "^0.6.0",
-    "uuid": "^2.0.1",
-    "pg": "4.x"
+    "uuid": "^2.0.1"
   }
 }
