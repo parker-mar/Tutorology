@@ -1,6 +1,9 @@
 /**
  * Created by ahmedel-baz on 15-11-04.
  */
+
+var bcrypt = require('bcrypt-nodejs');
+
 var UserController = function(app) {
 
     var Users = app.models.Users;
@@ -180,12 +183,12 @@ var UserController = function(app) {
                     var errMsg = "Error: User not found!";
                     console.log(errMsg);
                     res.status(400).send({error: true, message: errMsg});
-                } else if (oldPass != user.password) {
+                } else if (!user.validPassword(oldPass)) {
                     var errMsg = "Error: Old password is not correct.";
                     console.log(errMsg);
                     res.status(400).send({error: true, message: errMsg});
                 } else {
-                    user.password = newPass;
+                    user.password = bcrypt.hashSync(newPass, bcrypt.genSaltSync(8), null)
                     user.save(function (err) {
                         if (err) {
                             console.log(err.message);

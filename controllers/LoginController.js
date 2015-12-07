@@ -1,6 +1,9 @@
 /**
  * Created by ahmedel-baz on 15-11-04.
  */
+
+var bcrypt = require('bcrypt-nodejs');
+
 var LoginController = function(app) {
 
     var Users = app.models.Users;
@@ -34,7 +37,7 @@ var LoginController = function(app) {
                 if (user) {
 
                     var now = new Date();
-                    if ((now.getTime() - user.lastFailedLogin.getTime()) < 10000 || user.password !== pass){
+                    if ((now.getTime() - user.lastFailedLogin.getTime()) < 10000 || !user.validPassword(pass)){
 
                         user.lastFailedLogin = new Date();
                         user.save(function (err) {
@@ -43,11 +46,10 @@ var LoginController = function(app) {
                                 console.log(err.message);
                                 res.status(500).send({error: true, message: "An internal server error occurred."});
                                 return;
-                            }   
+                            }
                             var errMsg = "Error: Invalid email or password. Try Again in 10 seconds";
                             res.status(400).send({error: true, message: errMsg});
                         });
-
                     } else {
                         console.log("TEST4");
                         req.session.userId = user._doc._id;
@@ -123,7 +125,7 @@ var LoginController = function(app) {
                             var attributes = {
                                 email: email,
                                 displayName: email,
-                                password: pass,
+                                password: bcrypt.hashSync(pass, bcrypt.genSaltSync(8), null),
                                 authorization: authorization,
                                 profile: profile._id
                             };
