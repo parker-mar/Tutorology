@@ -30,7 +30,8 @@ angular.module('MyApp.requests', ['ngRoute'])
 		                    $scope.requests.forEach(function(req){
 		                    	req.active = false;
 		                    	req.created_at = $filter('date')(req.created_at, 'medium');
-		                    });	
+		                    });
+							console.log($scope.requests);
 		                }, function errorCallback(res){	
 							            //trigger error message here.
 						        console.log("Failed getting requests.");
