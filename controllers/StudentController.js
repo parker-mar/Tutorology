@@ -23,7 +23,7 @@ var StudentController = function(app) {
                 return;
             }
 
-            res.send({error : false, data : students});
+            res.send({error : false, data : [].concat(students)});
         });
     };
 
@@ -113,7 +113,7 @@ var StudentController = function(app) {
                 return;
             }
 
-            res.send({error : false, data : requests});
+            res.send({error : false, data : [].concat(requests)});
         });
     };
 
@@ -147,7 +147,7 @@ var StudentController = function(app) {
             studentId : studentId,
             tutorId : tutorId,
             rating : rating,
-            message : (message === "undefined" ? "" : message),
+            message : (typeof message === "undefined" ? "" : message),
             flagged : false,
             reason : ""
         };
@@ -255,6 +255,7 @@ var StudentController = function(app) {
                 var errMsg = "No student with given email.";
                 console.log(errMsg);
                 res.status(400).send({error: true, message: errMsg});
+                return;
             }
 
             var attributes = {
@@ -300,7 +301,7 @@ var StudentController = function(app) {
                 return;
             }
 
-            res.send({error : false, data : referrals});
+            res.send({error : false, data : [].concat(referrals)});
         });
     };
 
@@ -312,7 +313,7 @@ var StudentController = function(app) {
         //res.status(500).send({error: true, message: "Feature not implemented"});
         var studentId = req.params.studentId;
         var referralId = req.params.referralId;
-        var isRead = (req.body.isRead == "true" ? true : false);
+        var isRead = (req.body.isRead == "true" || req.body.isRead == true ? true : false);
         console.log(isRead);
         console.log("loogged is read");
 
