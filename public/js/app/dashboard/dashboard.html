@@ -81,7 +81,7 @@
                                 <input name="{{req.studentId.displayName}}" type="radio" ng-model="req.accepted" ng-value="false">
                                 Deny
                             </label>
-                            <button class="btn btn-primary btn-lg" ng-click="sendRequest(req, req.accepted, req.resMessage)" type="button">
+                            <button class="btn btn-primary btn-lg" ng-click="sendRequest(req, req.accepted, req.response)" type="button">
                                 Respond
                             </button>
                         </div>
@@ -116,13 +116,13 @@
             <div class="panel panel-default bg-warning" style="margin-top: 50px">
                 <div class="panel-body bg-info" ng-click='panelClick(dispute)'>
                     <div>
-                        <span>Name: <a ng-href="/#/users/{{dispute.studentId._id}}/profile"> {{dispute.studentId.displayName}}</a></span>
-                        <span>Rating: {{dispute.rating}}</span>
+                        <p>Name: <a ng-href="/#/users/{{dispute.studentId._id}}/profile"> {{dispute.studentId.displayName}}</a></p>
+                        <p>Rating: {{dispute.rating}}</p>
                     </div>
                     <div>
-                        <span> 
+                        <p> 
                             {{dispute.message}}
-                        </span>
+                        </p>
                     </div>
                 </div>
                 <div ng-if="dispute.active" class="panel-footer" style="padding-bottom: 50px">

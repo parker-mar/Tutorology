@@ -9,12 +9,6 @@ angular.module('MyApp.dashboard', ['ngRoute'])
 }])
 .controller("DashController", ['$scope','$http','$rootScope', '$filter', function($scope, $http, $rootScope, $filter) {
 
-    // To Do --> correcting attibutes from data 
-    //       --> LIVE testing
-    //       --> add link to tutor profile form student dash. 
-
-	//$scope.searchTerm = "";
-
 	$scope.noResponseClass = 'bg-info';
 	$scope.acceptResponseClass = 'bg-success';
 	$scope.denyResponseClass = 'bg-danger';
@@ -76,10 +70,10 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         // Check if already has responses
         if (!req.hasResponse){
             $http.put('/api/tutors/' + $rootScope.actor._id + '/requests/' + req._id
-                ,{accepted: accpt, response: message}).then(                   
+                ,{accepted: accpt, response: message}).then(              
                 function successCallback(res){
                         req.hasResponse = true;
-                        req.accepted = req.accpt;
+                        req.accepted = accpt;
                     },
 
                     function errorCallback(res){
@@ -94,7 +88,6 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         function successCallback(res){
             $rootScope.actor = res.data.data;
             // If actor is student default response is to send reconmmended Tutors
-            console.log($rootScope.actor);
             if ($rootScope.actor.authorization == 'SAdmin'){
                 $http.get('/api/get-disputes/').then(
                     function successCallback(res){
@@ -134,7 +127,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
             		function successCallback(res){
             			$scope.requests = res.data.data;
 
-
+                        console.log($scope.requests);
                         $scope.requests.forEach(function(req){
                             req.active = false;
                             req.created_at = $filter('date')(req.created_at, 'medium');
