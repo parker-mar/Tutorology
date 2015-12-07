@@ -113,8 +113,6 @@ var StudentController = function(app) {
                 return;
             }
 
-            console.log(requests);
-
             res.send({error : false, data : requests});
         });
     };
