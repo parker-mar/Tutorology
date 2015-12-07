@@ -51,7 +51,7 @@ app.activityLogger = new ActivityLogger(app);
 require('./routes')(app);
 
 
-app.listen(3000,'0.0.0.0');
+app.listen(80,'0.0.0.0');
 
 module.exports = app;
 
