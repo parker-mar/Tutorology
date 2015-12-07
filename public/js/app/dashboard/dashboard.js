@@ -88,7 +88,7 @@ angular.module('MyApp.dashboard', ['ngRoute'])
         function successCallback(res){
             $rootScope.actor = res.data.data;
             // If actor is student default response is to send reconmmended Tutors
-            if ($rootScope.actor.authorization == 'SAdmin'){
+            if ($rootScope.actor.authorization == 'SAdmin' || $rootScope.actor.authorization == 'Admin'){
                 $http.get('/api/get-disputes/').then(
                     function successCallback(res){
                         $scope.disputes = res.data.data;
