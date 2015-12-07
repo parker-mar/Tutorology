@@ -46,13 +46,13 @@ app.tutorAuthUrl = tutorOauth2Client.generateAuthUrl({
 });
 
 //To connect to MongoDB's database
-//mongoose.connect('mongodb://heroku_9g2w3hbk:beoftgpg361fiht6a0tsnqb7qu@ds041924.mongolab.com:41924/heroku_9g2w3hbk');
+mongoose.connect('mongodb://heroku_9g2w3hbk:beoftgpg361fiht6a0tsnqb7qu@ds041924.mongolab.com:41924/heroku_9g2w3hbk');
 
 //To connect locally
-mongoose.connect('mongodb://localhost/bazahmed', {
-    user: '',
-    pass: ''
-});
+//mongoose.connect('mongodb://localhost/bazahmed', {
+//    user: '',
+//    pass: ''
+//});
 
 //check the status of this connection
 var db = mongoose.connection;
