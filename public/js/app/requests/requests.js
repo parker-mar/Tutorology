@@ -27,7 +27,6 @@ angular.module('MyApp.requests', ['ngRoute'])
 				$http.get("/api/students/" +  $rootScope.actor._id + "/requests").then(
 		            function successCallback(res){
 		                    $scope.requests = res.data.data;
-		                    console.log($scope.requests);
 		                    $scope.requests.forEach(function(req){
 		                    	req.active = false;
 		                    	req.created_at = $filter('date')(req.created_at, 'medium');
