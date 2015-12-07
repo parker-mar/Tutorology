@@ -17,10 +17,7 @@ var uuid = require('uuid');
 app.mongoose = mongoose;
 
 //To connect to MongoDB's database
-mongoose.connect('mongodb://heroku_9g2w3hbk:beoftgpg361fiht6a0tsnqb7qu@ds041924.mongolab.com:41924/heroku_9g2w3hbk', {
-    user: '',
-    pass: ''
-});
+mongoose.connect('mongodb://heroku_9g2w3hbk:beoftgpg361fiht6a0tsnqb7qu@ds041924.mongolab.com:41924/heroku_9g2w3hbk');
 
 //check the status of this connection
 var db = mongoose.connection;
