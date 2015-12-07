@@ -80,8 +80,7 @@ var TutorController = function(app) {
                 {path: 'profile'},
                 {path: 'topics'},
                 {path: 'reviews', populate:
-                    {path: 'studentId', populate:
-                        {path: 'profile'}}}])
+                    {path: 'studentId', select: '_id displayName'}}])
             .exec(function (err, tutor) {
                 if (err) {
                     console.log(err.message);
@@ -207,10 +206,9 @@ var TutorController = function(app) {
 
         Requests
             .find({tutorId: tutorId})
-            .sort({'created_at': 1})
+            .sort({'created_at': 'desc'})
             .populate([
-                {path: 'studentId', populate:
-                    {path: 'profile'}},
+                {path: 'studentId', select: '_id displayName' },
                 {path: 'topicId'}])
             .exec(function (err, requests) {
                 if (err) {
@@ -234,6 +232,7 @@ var TutorController = function(app) {
         var requestId = req.params.requestId;
         var accepted = req.body.accepted;
         var response = req.body.response;
+        console.log(req.body.response);
 
         if (typeof accepted === "undefined") {
             var errMsg = "Error: accepted unspecified.";
@@ -280,10 +279,8 @@ var TutorController = function(app) {
             .find({tutorId: tutorId})
             .sort({'created_at': 1})
             .populate([
-                {path: 'studentId', populate:
-                    {path: 'profile'}},
-                {path: 'tutorId', populate:
-                    {path: 'profile'}}])
+                {path: 'studentId', select: '_id displayName'},
+                {path: 'tutorId', select: '_id displayName'}])
             .exec(function (err, reviews){
                 if (err) {
                     console.log(err.message);
@@ -365,10 +362,8 @@ var TutorController = function(app) {
             .find({flagged: true})
             .sort({'created_at': 1})
             .populate([
-                {path: 'studentId', populate:
-                    {path: 'profile'}},
-                {path: 'tutorId', populate:
-                    {path: 'profile'}}])
+                {path: 'studentId', select: '_id displayName'},
+                {path: 'tutorId', select: '_id displayName'}])
             .exec(function (err, reviews){
                 if (err) {
                     console.log(err.message);
