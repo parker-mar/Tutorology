@@ -188,7 +188,7 @@ var UserController = function(app) {
                     console.log(errMsg);
                     res.status(400).send({error: true, message: errMsg});
                 } else {
-                    user.password = bcrypt.hashSync(newPass, bcrypt.genSaltSync(8), null)
+                    user.password = bcrypt.hashSync(newPass, bcrypt.genSaltSync(8), null);
                     user.save(function (err) {
                         if (err) {
                             console.log(err.message);
