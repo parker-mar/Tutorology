@@ -1,4 +1,4 @@
-# csc309a5
+# Tutorology
 
 Link to design document https://docs.google.com/document/d/1r5wUkHJ8z7pDeRhUjBmkEB0sXkYJVnbzpA8nRVf3ySA/edit?usp=sharing contains details on:
 - User roles
